@@ -94,3 +94,70 @@ export interface EventsQuery {
   size: number;
   sort: EventSort;
 }
+
+/* ------------------------------------------------------------------ dashboard */
+
+/** Rule that produced an attention item. Ignore unknown values for forward-compat. */
+export type AttentionType = "NO_TIERS" | "LOW_STOCK" | "POSTPONED";
+
+/**
+ * One entry of `organizing.attention`. `tierId`/`tierName`/`remaining` are only
+ * present for `LOW_STOCK`; `ticketsIssued` only for `POSTPONED`.
+ */
+export interface AttentionItem {
+  type: AttentionType;
+  eventId: string;
+  eventTitle: string;
+  startTime: string;
+  tierId?: string;
+  tierName?: string;
+  remaining?: number;
+  ticketsIssued?: number;
+}
+
+/** The next event the caller organizes, from `GET /users/me/dashboard`. */
+export interface NextOrganizingEvent {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  location: string | null;
+  status: EventStatus;
+  myRole: EventRole;
+  totalCapacity: number;
+  ticketsIssued: number;
+  ticketsCheckedIn: number;
+}
+
+export interface OrganizingDashboard {
+  eventsTotal: number;
+  eventsUpcoming: number;
+  ticketsSold: number;
+  revenue: number;
+  nextEvent: NextOrganizingEvent | null;
+  attention: AttentionItem[];
+}
+
+/** The next ticket the caller holds. */
+export interface NextTicket {
+  id: string;
+  event: {
+    id: string;
+    title: string;
+    startTime: string;
+    location: string | null;
+  };
+  tier: { id: string; tierName: string };
+  ticketStatus: TicketStatus;
+}
+
+export interface AttendingDashboard {
+  ticketsUpcoming: number;
+  nextTicket: NextTicket | null;
+}
+
+/** Aggregate payload from `GET /users/me/dashboard`. */
+export interface DashboardResponse {
+  organizing: OrganizingDashboard;
+  attending: AttendingDashboard;
+}
