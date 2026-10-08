@@ -43,8 +43,8 @@ export function formatEventDay(startISO: string): { day: string; month: string }
   };
 }
 
-export function formatPrice(minPrice: number): string {
-  if (minPrice <= 0) return "Free";
+export function formatPrice(minPrice: number | null | undefined): string {
+  if (minPrice == null || minPrice <= 0) return "Free";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
