@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { buildEventsHref } from "@/app/lib/events-query";
-import { ArrowRight } from "../ui/icons";
+import { ArrowRight } from "./icons";
 
 function pageWindow(current: number, total: number): (number | "…")[] {
   const candidates = new Set<number>([0, total - 1, current - 1, current, current + 1]);
@@ -21,14 +20,20 @@ function pageWindow(current: number, total: number): (number | "…")[] {
 const base =
   "inline-flex h-11 min-w-10 items-center justify-center rounded-xl border-2 border-ink px-3 text-sm font-semibold transition-all duration-500 ease-brutal sm:h-10";
 
+/**
+ * Shared pagination control. `buildHref` is supplied by the feature so this
+ * stays route-agnostic (events, tickets, …).
+ */
 export default function Pagination({
   params,
   page,
   totalPages,
+  buildHref,
 }: {
   params: Record<string, string>;
   page: number;
   totalPages: number;
+  buildHref: (params: Record<string, string>, page: number) => string;
 }) {
   if (totalPages <= 1) return null;
 
@@ -38,7 +43,7 @@ export default function Pagination({
     <nav aria-label="Pagination" className="mt-12 flex flex-wrap items-center justify-center gap-2">
       {current > 0 ? (
         <Link
-          href={buildEventsHref(params, current - 1)}
+          href={buildHref(params, current - 1)}
           aria-label="Previous page"
           className={`${base} bg-paper shadow-brutal-sm hover:-translate-y-0.5`}
         >
@@ -60,7 +65,7 @@ export default function Pagination({
         ) : (
           <Link
             key={item}
-            href={buildEventsHref(params, item)}
+            href={buildHref(params, item)}
             aria-current={item === current ? "page" : undefined}
             aria-label={`Page ${item + 1}`}
             className={`${base} ${
@@ -74,7 +79,7 @@ export default function Pagination({
 
       {current < totalPages - 1 ? (
         <Link
-          href={buildEventsHref(params, current + 1)}
+          href={buildHref(params, current + 1)}
           aria-label="Next page"
           className={`${base} bg-paper shadow-brutal-sm hover:-translate-y-0.5`}
         >

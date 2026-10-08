@@ -1,12 +1,16 @@
 import { getCurrentUser } from "@/app/lib/auth";
+import {
+  buildEventsHref,
+  parseEventsSearchParams,
+  type RawSearchParams,
+} from "@/app/lib/events-query";
 import { getEvents, getMyEvents } from "@/app/lib/events";
-import { parseEventsSearchParams, type RawSearchParams } from "@/app/lib/events-query";
 import type { EventSummary, Page } from "@/app/lib/types";
+import Pagination from "../ui/Pagination";
 import EmptyState from "./EmptyState";
 import ErrorState from "./ErrorState";
 import EventGrid from "./EventGrid";
 import FilterChips from "./FilterChips";
-import Pagination from "./Pagination";
 
 /**
  * Request-time results: awaits `searchParams` and the session, then fetches the
@@ -42,7 +46,12 @@ export default async function EventsResults({
       ) : (
         <>
           <EventGrid events={events} />
-          <Pagination params={view.params} page={currentPage} totalPages={totalPages} />
+          <Pagination
+            params={view.params}
+            page={currentPage}
+            totalPages={totalPages}
+            buildHref={buildEventsHref}
+          />
         </>
       )}
     </div>
