@@ -11,7 +11,7 @@ export default function Hero() {
   return (
     <Section
       tone="brand"
-      className="overflow-hidden pt-16 sm:pt-20 lg:pt-24"
+      className="overflow-hidden pt-32 sm:pt-36 lg:pt-40"
     >
       <div
         aria-hidden="true"
