@@ -1,27 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { formatEventDateTime } from "@/app/lib/format";
 import type { NextTicket } from "@/app/lib/types";
-import TicketCard from "../landing/TicketCard";
-import Button from "../ui/Button";
-import { Calendar, MapPin, QrCode, Ticket as TicketIcon, X } from "../ui/icons";
+import { Calendar, MapPin, QrCode, Ticket as TicketIcon } from "../ui/icons";
 import { useMounted } from "../events/useMounted";
+import TicketQrDialog from "../tickets/TicketQrDialog";
+import Button from "../ui/Button";
 
 const eyebrow =
   "font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft";
-
-function formatTicketDate(iso: string, timeZone?: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone,
-  }).format(date);
-}
 
 /**
  * The next ticket the caller holds, with a large phone-friendly QR view. The
@@ -34,17 +22,6 @@ export default function NextTicketCard({
 }) {
   const mounted = useMounted();
   const [open, setOpen] = useState(false);
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    closeRef.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
 
   if (!ticket) {
     return (
@@ -70,7 +47,7 @@ export default function NextTicketCard({
     );
   }
 
-  const date = formatTicketDate(
+  const date = formatEventDateTime(
     ticket.event.startTime,
     mounted ? undefined : "UTC",
   );
@@ -120,46 +97,15 @@ export default function NextTicketCard({
         </Button>
       </div>
 
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 px-4 py-8"
-          role="presentation"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Ticket QR code for ${ticket.event.title}`}
-            onClick={(event) => event.stopPropagation()}
-            className="w-full max-w-md"
-          >
-            <div className="mb-3 flex justify-end">
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close QR code"
-                className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-paper text-ink shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="rounded-3xl border-2 border-ink bg-paper p-4 shadow-brutal-xl sm:p-6">
-              <TicketCard
-                title={ticket.event.title}
-                date={date}
-                venue={ticket.event.location ?? "Online"}
-                tier={ticket.tier.tierName}
-                price=""
-                code={code}
-              />
-              <p className="mt-4 text-center text-sm font-semibold">
-                Show this code at the door.
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <TicketQrDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={ticket.event.title}
+        date={date}
+        venue={ticket.event.location ?? "Online"}
+        tier={ticket.tier.tierName}
+        code={code}
+      />
     </section>
   );
 }

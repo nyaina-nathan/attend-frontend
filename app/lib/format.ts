@@ -32,15 +32,42 @@ export function formatEventDate(startISO: string, endISO?: string): string {
   return `${date} · ${time}`;
 }
 
-export function formatEventDay(startISO: string): { day: string; month: string } {
+export function formatEventDay(
+  startISO: string,
+  timeZone?: string,
+): { day: string; month: string } {
   const start = new Date(startISO);
   if (Number.isNaN(start.getTime())) return { day: "", month: "" };
   return {
-    day: new Intl.DateTimeFormat("en-US", { day: "2-digit" }).format(start),
-    month: new Intl.DateTimeFormat("en-US", { month: "short" })
+    day: new Intl.DateTimeFormat("en-US", { day: "2-digit", timeZone }).format(start),
+    month: new Intl.DateTimeFormat("en-US", { month: "short", timeZone })
       .format(start)
       .toUpperCase(),
   };
+}
+
+/**
+ * Weekday + date + time, e.g. `Sat, Nov 20 · 6:00 PM`. Pass a `timeZone` (or
+ * `"UTC"` before mount) to keep server and client labels identical.
+ */
+export function formatEventDateTime(iso: string, timeZone?: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const day = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone,
+  }).format(date);
+
+  const time = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone,
+  }).format(date);
+
+  return `${day} · ${time}`;
 }
 
 export function formatPrice(minPrice: number | null | undefined): string {
