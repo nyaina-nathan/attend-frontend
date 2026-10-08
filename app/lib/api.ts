@@ -20,3 +20,52 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   return (await res.json()) as T;
 }
+
+/** Non-throwing response shape, used where the HTTP status matters. */
+export interface ApiResult<T> {
+  status: number;
+  ok: boolean;
+  data?: T;
+  /** Machine-readable `error` code from the API error body, when present. */
+  errorCode?: string;
+}
+
+/**
+ * Like {@link apiFetch}, but never throws on a non-2xx response: the caller
+ * gets the status and the parsed `error` code so it can branch (401/403/404,
+ * `SOLD_OUT`, `EVENT_NOT_OPEN`). Network/parse failures still throw.
+ *
+ * Safe to call from the browser as well as the server.
+ */
+export async function apiRequest<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<ApiResult<T>> {
+  if (!API_BASE) {
+    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    headers: { Accept: "application/json", ...init?.headers },
+  });
+
+  const text = await res.text();
+  let data: T | undefined;
+  let errorCode: string | undefined;
+
+  if (text) {
+    try {
+      const parsed = JSON.parse(text);
+      if (res.ok) {
+        data = parsed as T;
+      } else if (parsed && typeof parsed.error === "string") {
+        errorCode = parsed.error;
+      }
+    } catch {
+      // Non-JSON body; status alone is enough.
+    }
+  }
+
+  return { status: res.status, ok: res.ok, data, errorCode };
+}
