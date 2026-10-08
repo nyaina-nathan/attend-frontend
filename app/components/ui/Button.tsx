@@ -5,7 +5,7 @@ type Variant = "primary" | "accent" | "outline" | "ghost";
 type Size = "md" | "lg";
 
 const base =
-  "group inline-flex items-center justify-center gap-3 rounded-full border-2 border-ink font-semibold transition-all duration-500 ease-brutal active:translate-x-[2px] active:translate-y-[2px] active:shadow-none";
+  "group inline-flex items-center justify-center gap-3 rounded-full border-2 border-ink font-semibold transition-all duration-500 ease-brutal active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
   primary: "bg-brand text-ink shadow-brutal hover:shadow-brutal-sm",
@@ -29,6 +29,7 @@ export default function Button({
   className = "",
   type = "button",
   onClick,
+  disabled = false,
 }: {
   children: ReactNode;
   href?: string;
@@ -38,6 +39,7 @@ export default function Button({
   className?: string;
   type?: "button" | "submit";
   onClick?: () => void;
+  disabled?: boolean;
 }) {
   const classes = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
 
@@ -74,7 +76,7 @@ export default function Button({
   }
 
   return (
-    <button type={type} className={classes} onClick={onClick}>
+    <button type={type} className={classes} onClick={onClick} disabled={disabled}>
       {inner}
     </button>
   );
