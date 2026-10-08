@@ -3,9 +3,18 @@ import { formatEventDate, formatEventDay, formatPrice } from "@/app/lib/format";
 import type { EventSummary } from "@/app/lib/types";
 import { MapPin } from "../ui/icons";
 
+const statusStyles: Record<
+  Exclude<EventSummary["status"], "OK">,
+  { label: string; className: string }
+> = {
+  CANCELLED: { label: "Cancelled", className: "bg-danger text-paper" },
+  POSTPONED: { label: "Postponed", className: "bg-warning text-paper" },
+};
+
 export default function EventCard({ event }: { event: EventSummary }) {
   const { day, month } = formatEventDay(event.startTime);
   const price = formatPrice(event.minPrice);
+  const status = event.status === "OK" ? null : statusStyles[event.status];
 
   return (
     <Link
@@ -20,6 +29,13 @@ export default function EventCard({ event }: { event: EventSummary }) {
           <span className="font-mono text-[10px] tracking-wider">{month}</span>
         </div>
         <div className="min-w-0 flex-1">
+          {status ? (
+            <span
+              className={`mb-2 inline-flex rounded-full border-2 border-ink px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider ${status.className}`}
+            >
+              {status.label}
+            </span>
+          ) : null}
           <h3 className="line-clamp-2 font-display text-lg font-bold leading-tight transition-colors duration-300 ease-brutal group-hover:text-accent">
             {event.title}
           </h3>
