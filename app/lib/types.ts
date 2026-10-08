@@ -95,6 +95,20 @@ export interface EventsQuery {
   sort: EventSort;
 }
 
+/* ------------------------------------------------------------------- tickets */
+
+/**
+ * Normalized `GET /tickets/me` query, mirrored by the URL. `upcoming` defaults
+ * to `true` (only events that have not started yet); `status` is optional so the
+ * default view spans every ticket status.
+ */
+export interface TicketsQuery {
+  status?: TicketStatus;
+  upcoming: boolean;
+  page: number;
+  size: number;
+}
+
 /* ------------------------------------------------------------------ dashboard */
 
 /** Rule that produced an attention item. Ignore unknown values for forward-compat. */
