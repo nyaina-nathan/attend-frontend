@@ -31,7 +31,7 @@ export default function FilterChips({
           key={chip.key}
           href={removeFilterHref(params, chip.remove)}
           scroll={false}
-          className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-3 py-1 text-xs font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:-translate-y-0.5"
+          className="group inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-3 py-1.5 text-xs font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:-translate-y-0.5"
         >
           {chip.label}
           <X className="h-3.5 w-3.5 text-ink-soft transition-colors duration-300 ease-brutal group-hover:text-danger" />

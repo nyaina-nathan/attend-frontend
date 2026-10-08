@@ -31,7 +31,7 @@ interface FilterDraft {
 }
 
 const inputClass =
-  "rounded-xl border-2 border-ink bg-paper px-3 py-2 text-sm text-ink outline-none transition-colors duration-300 ease-brutal focus:border-accent";
+  "rounded-xl border-2 border-ink bg-paper px-3 py-2 text-base text-ink outline-none transition-colors duration-300 ease-brutal focus:border-accent md:text-sm";
 
 const FILTER_KEYS = ["q", "from", "to", "status", "sort", "isMine", "isPublic"] as const;
 
@@ -178,7 +178,7 @@ export default function EventsFilterBar({ isAuthenticated }: { isAuthenticated: 
 
   return (
     <>
-      <div className="z-30 rounded-2xl border-2 border-ink bg-surface/90 p-3 shadow-brutal backdrop-blur-md sm:p-4 lg:sticky lg:top-24">
+      <div className="z-30 rounded-2xl border-2 border-ink bg-surface/90 p-3 shadow-brutal backdrop-blur-md sm:p-4 md:sticky md:top-24">
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
@@ -188,14 +188,14 @@ export default function EventsFilterBar({ isAuthenticated }: { isAuthenticated: 
               onChange={(event) => setQ(event.target.value)}
               placeholder="Search events by title…"
               aria-label="Search events"
-              className="w-full rounded-full border-2 border-ink bg-paper py-2.5 pl-11 pr-11 text-sm text-ink outline-none transition-colors duration-300 ease-brutal placeholder:text-ink-soft/70 focus:border-accent"
+              className="w-full rounded-full border-2 border-ink bg-paper py-2.5 pl-11 pr-11 text-base text-ink outline-none transition-colors duration-300 ease-brutal placeholder:text-ink-soft/70 focus:border-accent md:text-sm"
             />
             {q ? (
               <button
                 type="button"
                 onClick={clearSearch}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-brand text-ink transition-transform duration-300 ease-brutal active:translate-x-[1px] active:translate-y-[1px]"
+                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-brand text-ink transition-transform duration-300 ease-brutal active:translate-x-[1px] active:translate-y-[1px]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -205,14 +205,14 @@ export default function EventsFilterBar({ isAuthenticated }: { isAuthenticated: 
           <button
             type="button"
             onClick={openSheet}
-            className="flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-4 py-2.5 text-sm font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal active:translate-x-[2px] active:translate-y-[2px] active:shadow-none lg:hidden"
+            className="flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-4 py-2.5 text-sm font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal active:translate-x-[2px] active:translate-y-[2px] active:shadow-none md:hidden"
           >
             <Sliders className="h-4 w-4" />
             Filters
           </button>
         </div>
 
-        <div className="mt-4 hidden lg:block">
+        <div className="mt-4 hidden md:block">
           <FilterFields
             value={desktopValue}
             onChange={onDesktopChange}
@@ -234,7 +234,7 @@ export default function EventsFilterBar({ isAuthenticated }: { isAuthenticated: 
       </div>
 
       {sheetOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 md:hidden">
           <button
             type="button"
             aria-label="Close filters"
@@ -245,7 +245,7 @@ export default function EventsFilterBar({ isAuthenticated }: { isAuthenticated: 
             role="dialog"
             aria-modal="true"
             aria-label="Filters"
-            className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t-2 border-ink bg-surface p-6 shadow-brutal-xl"
+            className="absolute inset-x-0 bottom-0 mx-auto max-h-[85vh] max-w-lg overflow-y-auto rounded-t-3xl border-t-2 border-ink bg-surface p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-brutal-xl"
           >
             <div className="mb-5 flex items-center justify-between">
               <h2 className="font-display text-xl font-bold">Filters</h2>
@@ -304,7 +304,7 @@ function FilterFields({
   };
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-end">
+    <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-end">
       <div className="flex flex-col gap-2">
         <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">Dates</span>
         <div className="flex flex-wrap items-end gap-2">
@@ -314,7 +314,7 @@ function FilterFields({
               type="date"
               value={value.from}
               onChange={(event) => onChange({ from: event.target.value })}
-              className={inputClass}
+              className={`${inputClass} w-full md:w-auto`}
             />
           </label>
           <label className="flex flex-col gap-1 text-xs font-semibold">
@@ -323,7 +323,7 @@ function FilterFields({
               type="date"
               value={value.to}
               onChange={(event) => onChange({ to: event.target.value })}
-              className={inputClass}
+              className={`${inputClass} w-full md:w-auto`}
             />
           </label>
         </div>
@@ -333,7 +333,7 @@ function FilterFields({
               key={preset.id}
               type="button"
               onClick={() => applyPreset(preset.id)}
-              className="rounded-full border-2 border-ink bg-paper px-3 py-1 text-xs font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+              className="rounded-full border-2 border-ink bg-paper px-3 py-1.5 text-xs font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
             >
               {preset.label}
             </button>
@@ -407,7 +407,7 @@ function FilterFields({
                   type="button"
                   aria-pressed={value.isPublic === option}
                   onClick={() => onChange({ isPublic: option })}
-                  className={`rounded-full border-2 border-ink px-3 py-1 text-xs font-semibold capitalize transition-colors duration-300 ease-brutal ${
+                  className={`rounded-full border-2 border-ink px-3 py-1.5 text-xs font-semibold capitalize transition-colors duration-300 ease-brutal ${
                     value.isPublic === option ? "bg-accent text-paper" : "bg-paper text-ink"
                   }`}
                 >

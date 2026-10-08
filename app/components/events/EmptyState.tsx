@@ -10,7 +10,7 @@ export default function EmptyState({
 }) {
   if (hasFilters) {
     return (
-      <div className="mt-8 flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-ink/40 bg-paper px-6 py-16 text-center">
+      <div className="mt-8 flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-ink/40 bg-paper px-5 py-12 text-center sm:px-6 sm:py-16">
         <span className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-ink bg-brand">
           <Calendar className="h-7 w-7" />
         </span>

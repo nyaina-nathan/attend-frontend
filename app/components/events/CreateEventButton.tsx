@@ -8,7 +8,12 @@ export default async function CreateEventButton() {
   if (!user) return null;
 
   return (
-    <Button href="/events/new" variant="accent" icon={<ArrowUpRight className="h-4 w-4" />}>
+    <Button
+      href="/events/new"
+      variant="accent"
+      className="w-full sm:w-auto"
+      icon={<ArrowUpRight className="h-4 w-4" />}
+    >
       Create an event
     </Button>
   );

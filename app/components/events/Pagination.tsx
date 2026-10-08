@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { buildEventsHref } from "@/app/lib/events-query";
+import { ArrowRight } from "../ui/icons";
 
 function pageWindow(current: number, total: number): (number | "…")[] {
   const candidates = new Set<number>([0, total - 1, current - 1, current, current + 1]);
@@ -18,7 +19,7 @@ function pageWindow(current: number, total: number): (number | "…")[] {
 }
 
 const base =
-  "inline-flex h-10 min-w-10 items-center justify-center rounded-xl border-2 border-ink px-3 text-sm font-semibold transition-all duration-500 ease-brutal";
+  "inline-flex h-11 min-w-10 items-center justify-center rounded-xl border-2 border-ink px-3 text-sm font-semibold transition-all duration-500 ease-brutal sm:h-10";
 
 export default function Pagination({
   params,
@@ -41,11 +42,13 @@ export default function Pagination({
           aria-label="Previous page"
           className={`${base} bg-paper shadow-brutal-sm hover:-translate-y-0.5`}
         >
-          Previous
+          <ArrowRight className="h-4 w-4 rotate-180 sm:hidden" />
+          <span className="hidden sm:inline">Previous</span>
         </Link>
       ) : (
         <span aria-disabled="true" className={`${base} border-ink/30 text-ink-soft/60`}>
-          Previous
+          <ArrowRight className="h-4 w-4 rotate-180 sm:hidden" />
+          <span className="hidden sm:inline">Previous</span>
         </span>
       )}
 
@@ -75,11 +78,13 @@ export default function Pagination({
           aria-label="Next page"
           className={`${base} bg-paper shadow-brutal-sm hover:-translate-y-0.5`}
         >
-          Next
+          <span className="hidden sm:inline">Next</span>
+          <ArrowRight className="h-4 w-4 sm:hidden" />
         </Link>
       ) : (
         <span aria-disabled="true" className={`${base} border-ink/30 text-ink-soft/60`}>
-          Next
+          <span className="hidden sm:inline">Next</span>
+          <ArrowRight className="h-4 w-4 sm:hidden" />
         </span>
       )}
     </nav>
