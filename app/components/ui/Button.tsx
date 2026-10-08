@@ -28,6 +28,7 @@ export default function Button({
   icon,
   className = "",
   type = "button",
+  onClick,
 }: {
   children: ReactNode;
   href?: string;
@@ -36,6 +37,7 @@ export default function Button({
   icon?: ReactNode;
   className?: string;
   type?: "button" | "submit";
+  onClick?: () => void;
 }) {
   const classes = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
 
@@ -72,7 +74,7 @@ export default function Button({
   }
 
   return (
-    <button type={type} className={classes}>
+    <button type={type} className={classes} onClick={onClick}>
       {inner}
     </button>
   );

@@ -147,6 +147,26 @@ export function Menu(props: IconProps) {
   );
 }
 
+export function Search(props: IconProps) {
+  return (
+    <Base {...props}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </Base>
+  );
+}
+
+export function Sliders(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+      <circle cx="9" cy="7" r="2" />
+      <circle cx="15" cy="12" r="2" />
+      <circle cx="8" cy="17" r="2" />
+    </Base>
+  );
+}
+
 export function X(props: IconProps) {
   return (
     <Base {...props}>
