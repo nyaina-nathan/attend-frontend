@@ -22,7 +22,7 @@ const ERROR_MESSAGES: Record<string, string> = {
  * password length and confirmation) before posting to the API. Errors appear in
  * red at the top of the form and clear themselves after ten seconds.
  */
-export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
+export default function RegisterForm() {
   const router = useRouter();
   const { error, showError, clearError } = useAuthError();
   const [fullName, setFullName] = useState("");
@@ -31,11 +31,6 @@ export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  const loginHref =
-    redirectTo === "/"
-      ? "/login"
-      : `/login?redirect=${encodeURIComponent(redirectTo)}`;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -73,7 +68,7 @@ export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
       });
 
       if (res.ok) {
-        router.push(redirectTo);
+        router.push("/dashboard");
         router.refresh();
         return;
       }
@@ -176,7 +171,7 @@ export default function RegisterForm({ redirectTo }: { redirectTo: string }) {
         <p className="text-center text-sm text-ink-soft">
           Already have an account?{" "}
           <Link
-            href={loginHref}
+            href="/login"
             className="font-semibold text-accent underline decoration-2 underline-offset-4 transition-colors duration-300 ease-brutal hover:text-ink"
           >
             Log in

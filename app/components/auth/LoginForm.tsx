@@ -18,20 +18,15 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 /**
  * Login form. Posts to the API with cookies included; on success it navigates
- * to the sanitized `redirectTo` target (or home). Errors appear in red at the
- * top of the form and clear themselves after ten seconds.
+ * to the dashboard. Errors appear in red at the top of the form and clear
+ * themselves after ten seconds.
  */
-export default function LoginForm({ redirectTo }: { redirectTo: string }) {
+export default function LoginForm() {
   const router = useRouter();
   const { error, showError, clearError } = useAuthError();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  const registerHref =
-    redirectTo === "/"
-      ? "/register"
-      : `/register?redirect=${encodeURIComponent(redirectTo)}`;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,7 +45,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
       });
 
       if (res.ok) {
-        router.push(redirectTo);
+        router.push("/dashboard");
         router.refresh();
         return;
       }
@@ -116,7 +111,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
         <p className="text-center text-sm text-ink-soft">
           New to Attend?{" "}
           <Link
-            href={registerHref}
+            href="/register"
             className="font-semibold text-accent underline decoration-2 underline-offset-4 transition-colors duration-300 ease-brutal hover:text-ink"
           >
             Create an account
