@@ -8,12 +8,10 @@ import { ArrowUpRight, Lock } from "../ui/icons";
  */
 export default function AccessState({
   kind,
-  redirect,
 }: {
   kind: "login" | "forbidden";
-  redirect?: string;
 }) {
-  const loginHref = `/login?redirect=${encodeURIComponent(redirect ?? "/events")}`;
+  const loginHref = "/login";
 
   return (
     <div className="mx-auto flex min-h-[60vh] w-full max-w-xl flex-col items-center justify-center gap-5 px-4 text-center">

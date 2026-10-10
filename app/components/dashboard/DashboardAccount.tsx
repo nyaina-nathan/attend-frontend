@@ -16,7 +16,7 @@ export default async function DashboardAccount() {
   if (!user) {
     return (
       <Link
-        href="/login?redirect=/dashboard"
+        href="/login"
         className="flex w-full items-center justify-center rounded-full border-2 border-ink bg-brand px-4 py-2 text-sm font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
       >
         Log in

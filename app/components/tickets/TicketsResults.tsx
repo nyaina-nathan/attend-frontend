@@ -28,7 +28,7 @@ export default async function TicketsResults({
 
   if (!result.ok) {
     if (result.status === 401) {
-      redirect("/login?redirect=/dashboard/tickets");
+      redirect("/login");
     }
     return <TicketsError />;
   }

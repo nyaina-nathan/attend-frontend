@@ -52,7 +52,7 @@ export default function TicketPanel({
 
   const cancelled = eventStatus === "CANCELLED";
   const busy = loadingTierId !== null;
-  const loginHref = `/login?redirect=${encodeURIComponent(`/events/${eventId}`)}`;
+  const loginHref = "/login";
 
   async function refreshTiers() {
     try {

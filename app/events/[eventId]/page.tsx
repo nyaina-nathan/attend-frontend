@@ -69,7 +69,7 @@ async function EventContent({ params }: PageParams) {
 
   if (result.status === 404) notFound();
   if (result.status === 401) {
-    return <AccessState kind="login" redirect={`/events/${eventId}`} />;
+    return <AccessState kind="login" />;
   }
   if (result.status === 403) {
     return <AccessState kind="forbidden" />;

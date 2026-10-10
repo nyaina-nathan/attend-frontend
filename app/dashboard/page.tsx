@@ -38,7 +38,7 @@ async function DashboardContent() {
 
   if (!result.ok) {
     if (result.status === 401) {
-      redirect("/login?redirect=/dashboard");
+      redirect("/login");
     }
     return <DashboardError />;
   }
