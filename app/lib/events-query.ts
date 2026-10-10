@@ -165,6 +165,115 @@ function sortLabel(value: string): string {
   return SORT_OPTIONS.find((option) => option.value === value)?.label ?? value;
 }
 
+/* ------------------------------------------------- dashboard (isMine) view */
+
+export interface ParsedDashboardEventsView {
+  query: EventsQuery;
+  /** Canonical, non-default params used to build shareable links. */
+  params: Record<string, string>;
+  hasFilters: boolean;
+}
+
+/**
+ * Parse the dashboard events view. `isMine` is always `true` and is never part
+ * of the canonical params: the caller only sees events they organize, so the
+ * toggle cannot be turned off. `isPublic` is honored because it only applies
+ * when `isMine` is effective.
+ */
+export function parseDashboardEventsSearchParams(
+  raw: RawSearchParams,
+): ParsedDashboardEventsView {
+  const q = first(raw.q)?.trim() || undefined;
+  const from = parseIso(first(raw.from));
+  const to = parseIso(first(raw.to));
+  const status = parseStatus(first(raw.status));
+  const sort = parseSort(first(raw.sort));
+  const page = parsePage(first(raw.page));
+  const isPublic = parseBool(first(raw.isPublic));
+
+  const params: Record<string, string> = {};
+  if (q) params.q = q;
+  if (from) params.from = from;
+  if (to) params.to = to;
+  if (status !== DEFAULT_STATUS) params.status = status;
+  if (sort !== DEFAULT_SORT) params.sort = sort;
+  if (isPublic !== undefined) params.isPublic = String(isPublic);
+
+  return {
+    query: {
+      q,
+      from,
+      to,
+      status,
+      isMine: true,
+      isPublic,
+      page,
+      size: EVENTS_PAGE_SIZE,
+      sort,
+    },
+    params,
+    hasFilters: Object.keys(params).length > 0,
+  };
+}
+
+export function buildDashboardEventsHref(
+  params: Record<string, string>,
+  page = 0,
+): string {
+  const search = new URLSearchParams(params);
+  if (page > 0) search.set("page", String(page));
+  const query = search.toString();
+  return query ? `/dashboard/events?${query}` : "/dashboard/events";
+}
+
+export function removeDashboardFilterHref(
+  params: Record<string, string>,
+  keys: string[],
+): string {
+  const next = { ...params };
+  for (const key of keys) delete next[key];
+  return buildDashboardEventsHref(next);
+}
+
+/**
+ * Chip descriptors for the active dashboard filters. The locked `isMine` is
+ * never surfaced; the date label is timezone-dependent so the chip component
+ * swaps it for a neutral label until after mount.
+ */
+export function dashboardChipsFromParams(
+  params: Record<string, string>,
+): EventsFilterChip[] {
+  const chips: EventsFilterChip[] = [];
+
+  if (params.q) chips.push({ key: "q", label: `“${params.q}”`, remove: ["q"] });
+
+  if (params.from || params.to) {
+    chips.push({
+      key: "range",
+      label: formatDateRange(params.from, params.to),
+      remove: ["from", "to"],
+    });
+  }
+
+  if (params.status) {
+    chips.push({ key: "status", label: statusLabel(params.status), remove: ["status"] });
+  }
+
+  if (params.isPublic) {
+    chips.push({
+      key: "isPublic",
+      label: params.isPublic === "true" ? "Public" : "Private",
+      remove: ["isPublic"],
+    });
+  }
+
+  if (params.sort) {
+    chips.push({ key: "sort", label: sortLabel(params.sort), remove: ["sort"] });
+  }
+
+  return chips;
+}
+
 const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
 
 export function formatDateRange(from?: string, to?: string): string {
