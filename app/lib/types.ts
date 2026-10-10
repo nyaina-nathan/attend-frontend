@@ -66,6 +66,25 @@ export interface EventSummary {
   minPrice: number | null;
 }
 
+/** Request body for `POST /events` (see docs/openapi.yaml). */
+export interface EventCreateInput {
+  title: string;
+  description?: string;
+  /** ISO UTC. */
+  startTime: string;
+  /** ISO UTC. */
+  endTime: string;
+  isPublic?: boolean;
+  location?: string;
+}
+
+/** Request body for `POST /events/{eventId}/tiers`. */
+export interface TierCreateInput {
+  tierName: string;
+  price: number;
+  capacity: number;
+}
+
 export interface Page<T> {
   content: T[];
   page?: number;

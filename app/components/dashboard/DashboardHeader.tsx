@@ -32,7 +32,7 @@ export default function DashboardHeader({ fullName }: { fullName: string }) {
         </p>
       </div>
       <Button
-        href="/events/new"
+        href="/dashboard/events?create=1"
         variant="accent"
         size="lg"
         className="shrink-0"

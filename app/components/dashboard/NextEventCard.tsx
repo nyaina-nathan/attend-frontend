@@ -68,7 +68,7 @@ export default function NextEventCard({
           </p>
         </div>
         <Button
-          href="/events/new"
+          href="/dashboard/events?create=1"
           variant="accent"
           className="mt-5 self-start"
           icon={<ArrowUpRight className="h-4 w-4" />}

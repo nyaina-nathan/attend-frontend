@@ -42,7 +42,7 @@ export default function EmptyState({
         </p>
       </div>
       <Link
-        href={isAuthenticated ? "/events/new" : "/register"}
+        href={isAuthenticated ? "/dashboard/events?create=1" : "/register"}
         className="mt-2 rounded-full border-2 border-ink bg-accent px-6 py-3 text-sm font-semibold text-paper shadow-brutal transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
       >
         Create an event

@@ -66,7 +66,6 @@ export default function EventPage({ params }: PageParams) {
 async function EventContent({ params }: PageParams) {
   const { eventId } = await params;
   const result = await getEventResult(eventId);
-  console.log(result)
 
   if (result.status === 404) notFound();
   if (result.status === 401) {

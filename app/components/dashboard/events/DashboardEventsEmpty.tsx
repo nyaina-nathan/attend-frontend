@@ -49,7 +49,7 @@ export default function DashboardEventsEmpty({
         </p>
       </div>
       <div className="mt-2 flex flex-wrap justify-center gap-3">
-        <Link href="/events/new" className={filledCta}>
+        <Link href="/dashboard/events?create=1" className={filledCta}>
           Create event
         </Link>
         <Link href="/events" className={outlineCta}>

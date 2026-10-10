@@ -328,6 +328,13 @@ export function localDateInputToToISO(value: string): string | undefined {
   return new Date(year, month - 1, day, 23, 59, 59, 999).toISOString();
 }
 
+/** Local `datetime-local` value (`YYYY-MM-DDTHH:mm`) -> UTC ISO, as sent to the API. */
+export function localDateTimeInputToISO(value: string): string | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
 export interface DatePreset {
   id: string;
   label: string;

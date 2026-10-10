@@ -27,7 +27,7 @@ Events & tickets app: public landing page that replaces the login page as the ho
 - Headline: "Create events. Sell tickets. Scan at the door."
 - One sentence of subtext
 - Primary CTA: *Browse events* (links to `/events`)
-- Secondary CTA: *Create an event* (links to `/events/new` or `/register` if logged out)
+- Secondary CTA: *Create an event* (links to `/register`; event creation itself lives in the dashboard at `/dashboard/events?create=1`)
 - Visual: mock ticket card with a QR code, or a phone mockup of the ticket screen
 
 ## 3. Upcoming events (live data)

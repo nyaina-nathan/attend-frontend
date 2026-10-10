@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import CreateEventDialog from "@/app/components/dashboard/events/CreateEventDialog";
 import DashboardEventsFilterBar from "@/app/components/dashboard/events/DashboardEventsFilterBar";
 import DashboardEventsHeader from "@/app/components/dashboard/events/DashboardEventsHeader";
 import DashboardEventsResults from "@/app/components/dashboard/events/DashboardEventsResults";
@@ -36,6 +37,10 @@ export default function DashboardEventsPage({
 
       <Suspense fallback={<DashboardEventsSkeleton />}>
         <DashboardEventsResults searchParams={searchParams} />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <CreateEventDialog />
       </Suspense>
     </div>
   );

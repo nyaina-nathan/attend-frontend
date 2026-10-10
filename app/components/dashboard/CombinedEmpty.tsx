@@ -21,7 +21,10 @@ export default function CombinedEmpty() {
         </p>
       </div>
       <div className="mt-1 flex flex-wrap justify-center gap-3">
-        <Button href="/events/new" icon={<ArrowUpRight className="h-4 w-4" />}>
+        <Button
+          href="/dashboard/events?create=1"
+          icon={<ArrowUpRight className="h-4 w-4" />}
+        >
           Create event
         </Button>
         <Button href="/events" variant="outline">

@@ -25,7 +25,7 @@ export default function DashboardEventsHeader() {
           Browse events
         </Button>
         <Button
-          href="/events/new"
+          href="/dashboard/events?create=1"
           variant="accent"
           className="shrink-0"
           icon={<ArrowUpRight className="h-4 w-4" />}

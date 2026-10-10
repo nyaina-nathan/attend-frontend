@@ -9,7 +9,7 @@ export default async function CreateEventButton() {
 
   return (
     <Button
-      href="/events/new"
+      href="/dashboard/events?create=1"
       variant="accent"
       className="w-full sm:w-auto"
       icon={<ArrowUpRight className="h-4 w-4" />}

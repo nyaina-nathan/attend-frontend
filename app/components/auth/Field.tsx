@@ -7,12 +7,14 @@ import type { InputHTMLAttributes } from "react";
 export default function Field({
   label,
   hint,
+  error,
   className = "",
   id,
   ...props
 }: {
   label: string;
   hint?: string;
+  error?: string;
 } & InputHTMLAttributes<HTMLInputElement>) {
   const fieldId = id ?? props.name;
 
@@ -21,10 +23,20 @@ export default function Field({
       <span className="text-xs font-semibold text-ink">{label}</span>
       <input
         id={fieldId}
-        className={`w-full rounded-xl border-2 border-ink bg-paper px-3.5 py-2.5 text-base text-ink outline-none transition-colors duration-300 ease-brutal placeholder:text-ink-soft/60 focus:border-accent ${className}`}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${fieldId}-error` : undefined}
+        className={`w-full rounded-xl border-2 bg-paper px-3.5 py-2.5 text-base text-ink outline-none transition-colors duration-300 ease-brutal placeholder:text-ink-soft/60 focus:border-accent ${
+          error ? "border-danger" : "border-ink"
+        } ${className}`}
         {...props}
       />
-      {hint ? <span className="text-xs text-ink-soft">{hint}</span> : null}
+      {error ? (
+        <span id={`${fieldId}-error`} className="text-xs font-semibold text-danger">
+          {error}
+        </span>
+      ) : hint ? (
+        <span className="text-xs text-ink-soft">{hint}</span>
+      ) : null}
     </label>
   );
 }
