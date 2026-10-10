@@ -26,7 +26,7 @@ export default function EventsPage({
   return (
     <>
       <Navbar />
-      <main id="main" className="flex-1 pt-28 sm:pt-32">
+      <main id="main" className="flex-1 pt-28 sm:pt-32 mb-5">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <EventsHeader
             action={

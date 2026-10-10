@@ -67,12 +67,21 @@ export default async function NavbarAuth({
     </span>
   );
 
+  const mobile = variant === "mobile";
   const name = (
     <span className="flex min-w-0 max-w-[9rem] flex-col leading-tight">
-      <span className="truncate text-sm font-semibold text-ink">
+      <span
+        className={`truncate text-sm font-semibold ${
+          mobile ? "text-paper" : "text-ink"
+        }`}
+      >
         {user.fullName}
       </span>
-      <span className="truncate font-mono text-[10px] text-ink-soft">
+      <span
+        className={`truncate font-mono text-[10px] ${
+          mobile ? "text-paper/70" : "text-ink-soft"
+        }`}
+      >
         @{user.username}
       </span>
     </span>
