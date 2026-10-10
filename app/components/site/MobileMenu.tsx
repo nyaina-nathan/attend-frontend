@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import Button from "../ui/Button";
-import { ArrowUpRight } from "../ui/icons";
+import { useEffect, useState, type ReactNode } from "react";
 
 const links = [
   { href: "/events", label: "Events" },
   { href: "#how-it-works", label: "How it works" },
 ];
 
-export default function MobileMenu() {
+export default function MobileMenu({ account }: { account: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -77,21 +75,7 @@ export default function MobileMenu() {
             open ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"
           }`}
         >
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="rounded-full border-2 border-paper px-6 py-3.5 text-center font-semibold text-paper"
-          >
-            Log in
-          </Link>
-          <Button
-            href="/register"
-            size="lg"
-            className="w-full"
-            icon={<ArrowUpRight className="h-4 w-4" />}
-          >
-            Sign up
-          </Button>
+          {account}
         </div>
       </div>
     </div>

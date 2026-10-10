@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Button from "../ui/Button";
+import { Suspense } from "react";
 import Logo from "../ui/Logo";
-import { ArrowUpRight } from "../ui/icons";
 import MobileMenu from "./MobileMenu";
+import NavbarAuth, { NavbarAuthSkeleton } from "./NavbarAuth";
 
 const links = [
   { href: "/events", label: "Events" },
@@ -28,18 +28,18 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/login"
-            className="rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors duration-300 ease-brutal hover:bg-ink/5"
-          >
-            Log in
-          </Link>
-          <Button href="/register" icon={<ArrowUpRight className="h-4 w-4" />}>
-            Sign up
-          </Button>
+          <Suspense fallback={<NavbarAuthSkeleton />}>
+            <NavbarAuth />
+          </Suspense>
         </div>
 
-        <MobileMenu />
+        <MobileMenu
+          account={
+            <Suspense fallback={<NavbarAuthSkeleton variant="mobile" />}>
+              <NavbarAuth variant="mobile" />
+            </Suspense>
+          }
+        />
       </nav>
     </header>
   );

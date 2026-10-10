@@ -1,5 +1,13 @@
 /** Display formatting helpers. */
 
+/** Up to two uppercase initials for an avatar placeholder, e.g. `Ada Lovelace` -> `AL`. */
+export function initials(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  const letters = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "");
+  return letters.join("") || "?";
+}
+
 export function formatEventDate(startISO: string, endISO?: string): string {
   const start = new Date(startISO);
   if (Number.isNaN(start.getTime())) return "";

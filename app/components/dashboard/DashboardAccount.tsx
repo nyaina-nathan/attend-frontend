@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/app/lib/auth";
+import { initials } from "@/app/lib/format";
 import LogoutButton from "./LogoutButton";
-
-function initials(fullName: string): string {
-  const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  const letters = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "");
-  return letters.join("") || "?";
-}
 
 /** Account block pinned to the bottom of the dashboard sidebar. Streams in. */
 export default async function DashboardAccount() {
