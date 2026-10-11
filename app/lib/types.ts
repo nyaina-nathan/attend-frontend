@@ -78,6 +78,18 @@ export interface EventCreateInput {
   location?: string;
 }
 
+/** Request body for `PATCH /events/{eventId}`. Only changed fields are sent. */
+export interface EventUpdateInput {
+  title?: string;
+  description?: string;
+  location?: string;
+  /** ISO UTC. */
+  startTime?: string;
+  /** ISO UTC. */
+  endTime?: string;
+  isPublic?: boolean;
+}
+
 /** Request body for `POST /events/{eventId}/tiers`. */
 export interface TierCreateInput {
   tierName: string;

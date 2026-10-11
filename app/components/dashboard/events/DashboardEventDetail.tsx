@@ -4,6 +4,7 @@ import LocalDateTime from "../../event/LocalDateTime";
 import { ArrowRight, Calendar, Globe, Lock, MapPin } from "../../ui/icons";
 import { RoleBadge, StatusBadge } from "../Badges";
 import DashboardEventTiers from "./DashboardEventTiers";
+import EditEventButton from "./EditEventButton";
 
 const eyebrow =
   "font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft";
@@ -11,18 +12,25 @@ const eyebrow =
 /**
  * Read-only organizer view of one event, built from `GET /events/{eventId}`:
  * masthead, about, ticket tiers and the raw metadata (visibility, role,
- * timestamps). Management actions land here in later steps.
+ * timestamps). An Edit button links to the edit screen until the event starts.
  */
 export default function DashboardEventDetail({ event }: { event: EventDetail }) {
   return (
     <div className="flex flex-col gap-8">
-      <Link
-        href="/dashboard/events"
-        className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-soft transition-colors duration-300 ease-brutal hover:text-accent"
-      >
-        <ArrowRight className="h-4 w-4 rotate-180" />
-        Back to my events
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href="/dashboard/events"
+          className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-soft transition-colors duration-300 ease-brutal hover:text-accent"
+        >
+          <ArrowRight className="h-4 w-4 rotate-180" />
+          Back to my events
+        </Link>
+        <EditEventButton
+          eventId={event.id}
+          startTime={event.startTime}
+          role={event.myRole}
+        />
+      </div>
 
       <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
