@@ -81,7 +81,7 @@ export default function TicketRow({ ticket }: { ticket: Ticket }) {
         date={date}
         venue={ticket.event.location ?? "Online"}
         tier={ticket.tier.tierName}
-        code={code}
+        code={ticket.id}
       />
     </li>
   );

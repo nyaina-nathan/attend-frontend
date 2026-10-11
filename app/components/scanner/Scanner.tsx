@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Scanner as QrScanner } from "@yudiel/react-qr-scanner";
+import { checkInTicket } from "@/app/lib/check-in";
 import { Check, X } from "../ui/icons";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -8,6 +9,25 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 type Result =
   | { kind: "ok"; name: string; tier: string }
   | { kind: "error"; title: string; detail?: string };
+
+/** Friendly copy for the API's machine-readable check-in error codes. */
+function checkInMessage(errorCode: string | undefined, status: number): string {
+  if (status === 401) return "Your session expired. Please log in again.";
+  switch (errorCode) {
+    case "TICKET_NOT_FOUND":
+      return "Ticket not found.";
+    case "NOT_AN_ORGANIZER":
+      return "You don’t organize this event.";
+    case "TICKET_ALREADY_USED":
+      return "Ticket has already been used.";
+    case "TICKET_NOT_VALID":
+      return "Ticket is cancelled or refunded.";
+    case "TICKET_EXPIRED":
+      return "Ticket is expired.";
+    default:
+      return "Check-in failed. Please try again.";
+  }
+}
 
 /**
  * Camera check-in surface. Validates the scanned value as a ticket UUID, posts
@@ -38,27 +58,25 @@ export function Scanner({
     setPaused(true);
 
     try {
-      const res = await post(id);
+      const res = await checkInTicket(id);
 
-      if (res.ok) {
-        const d = await res.json();
+      if (res.ok && res.data) {
         navigator.vibrate?.(100);
-        return show({ kind: "ok", name: d.owner.fullName, tier: d.tier.tierName });
+        return show({
+          kind: "ok",
+          name: res.data.owner.fullName,
+          tier: res.data.tier.tierName,
+        });
       }
 
-      const err = await res.json().catch(() => null);
-
-      if (err) {
-        return show({ kind: "error", title: err.error, detail: err.message });
-      }
-      show({ kind: "error", title: "Check-in failed", detail: "Try again" });
+      return show({
+        kind: "error",
+        title: checkInMessage(res.errorCode, res.status),
+      });
     } catch {
       show({ kind: "error", title: "Network error", detail: "Try again" });
     }
   }
-
-  const post = (id: string) =>
-    fetch(`/api/tickets/${id}/check-in`, { method: "POST", credentials: "include" });
 
   function show(r: Result) {
     setResult(r);

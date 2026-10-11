@@ -55,6 +55,15 @@ export interface Ticket {
   createdAt: string;
 }
 
+/** Response from `POST /tickets/{ticketId}/check-in`. */
+export interface CheckInResponse {
+  id: string;
+  ticketStatus: TicketStatus;
+  checkedInAt: string;
+  owner: { fullName: string; username: string };
+  tier: { tierName: string };
+}
+
 export interface EventSummary {
   id: string;
   title: string;

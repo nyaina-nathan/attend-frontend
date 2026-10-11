@@ -1,3 +1,4 @@
+import { QRCodeSVG } from "qrcode.react";
 import QrCode from "../ui/QrCode";
 import { Calendar, MapPin, Ticket } from "../ui/icons";
 
@@ -60,7 +61,12 @@ export default function TicketCard({
           </div>
 
           <div className="flex flex-col items-center justify-center gap-2 border-l-2 border-dashed border-ink pl-4">
-            <QrCode className="h-24 w-24" />
+                    <QRCodeSVG
+                      value={code}      // the UUID, nothing else
+                      size={220}
+                      level="M"
+                      marginSize={4}
+                    />
             <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">
               Scan at door
             </span>
