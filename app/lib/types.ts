@@ -206,3 +206,40 @@ export interface DashboardResponse {
   organizing: OrganizingDashboard;
   attending: AttendingDashboard;
 }
+
+/* --------------------------------------------------------------- invitations */
+
+export type InvitationStatus = "PENDING" | "ACCEPTED" | "DECLINED";
+
+/** Which side of the invitation to list, relative to the caller. */
+export type InvitationDirection = "received" | "sent";
+
+/** Narrow user reference embedded in an invitation. */
+export interface UserRef {
+  id: string;
+  fullName: string;
+  username: string;
+}
+
+/** An event creator's invitation for a user to join the event as an admin. */
+export interface Invitation {
+  id: string;
+  event: {
+    id: string;
+    title: string;
+    startTime: string;
+    location: string | null;
+  };
+  sender: UserRef;
+  receiver: UserRef;
+  invitationStatus: InvitationStatus;
+  createdAt: string;
+}
+
+/** Normalized `GET /invitations` query, mirrored by the URL. */
+export interface InvitationsQuery {
+  direction: InvitationDirection;
+  status?: InvitationStatus;
+  page: number;
+  size: number;
+}
