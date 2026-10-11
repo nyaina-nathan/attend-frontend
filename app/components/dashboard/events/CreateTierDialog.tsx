@@ -10,9 +10,7 @@ import {
 } from "@/app/lib/create-event";
 import type { Tier } from "@/app/lib/types";
 import { X } from "../../ui/icons";
-
-const inputClass =
-  "w-full rounded-xl border-2 border-ink bg-paper px-3.5 py-2.5 text-base text-ink outline-none transition-colors duration-300 ease-brutal placeholder:text-ink-soft/60 focus:border-accent";
+import TierFormFields from "./TierFormFields";
 
 function messageFor(errorCode: string | undefined, status: number): string {
   if (status === 401) return "Your session expired. Please log in again.";
@@ -151,59 +149,13 @@ export default function CreateTierDialog({
           </button>
         </header>
 
-        {error ? (
-          <p
-            role="alert"
-            className="mt-4 rounded-xl border-2 border-danger bg-danger/10 px-4 py-3 text-sm font-semibold text-danger"
-          >
-            {error}
-          </p>
-        ) : null}
-
-        <div className="mt-5 flex flex-col gap-4">
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold text-ink">Name</span>
-            <input
-              ref={inputRef}
-              type="text"
-              name="tierName"
-              value={draft.tierName}
-              onChange={(event) => update({ tierName: event.target.value })}
-              placeholder="General admission"
-              className={inputClass}
-            />
-          </label>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-semibold text-ink">Price</span>
-              <input
-                type="number"
-                name="price"
-                min="0"
-                step="0.01"
-                inputMode="decimal"
-                value={draft.price}
-                onChange={(event) => update({ price: event.target.value })}
-                placeholder="25.00"
-                className={inputClass}
-              />
-            </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-semibold text-ink">Capacity</span>
-              <input
-                type="number"
-                name="capacity"
-                min="0"
-                step="1"
-                inputMode="numeric"
-                value={draft.capacity}
-                onChange={(event) => update({ capacity: event.target.value })}
-                placeholder="100"
-                className={inputClass}
-              />
-            </label>
-          </div>
+        <div className="mt-5">
+          <TierFormFields
+            draft={draft}
+            error={error}
+            onChange={update}
+            nameInputRef={inputRef}
+          />
         </div>
 
         <footer className="mt-6 flex items-center justify-end gap-3">

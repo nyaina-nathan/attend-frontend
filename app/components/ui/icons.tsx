@@ -192,6 +192,15 @@ export function Plus(props: IconProps) {
   );
 }
 
+export function Pencil(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4 20h4l10-10a2.12 2.12 0 0 0-3-3L5 17v3Z" />
+      <path d="m13.5 6.5 3 3" />
+    </Base>
+  );
+}
+
 export function Github(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>

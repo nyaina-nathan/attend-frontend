@@ -97,6 +97,13 @@ export interface TierCreateInput {
   capacity: number;
 }
 
+/** Request body for `PATCH /tiers/{tierId}`. Only changed fields are sent. */
+export interface TierUpdateInput {
+  tierName?: string;
+  price?: number;
+  capacity?: number;
+}
+
 export interface Page<T> {
   content: T[];
   page?: number;
