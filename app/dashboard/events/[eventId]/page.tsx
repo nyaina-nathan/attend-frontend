@@ -6,6 +6,7 @@ import CollaboratorsSection from "@/app/components/dashboard/events/Collaborator
 import CollaboratorsSkeleton from "@/app/components/dashboard/events/CollaboratorsSkeleton";
 import DashboardEventDetail from "@/app/components/dashboard/events/DashboardEventDetail";
 import DashboardEventSkeleton from "@/app/components/dashboard/events/DashboardEventSkeleton";
+import ScanButton from "@/app/components/scanner/ScanButton";
 import { getEventResult } from "@/app/lib/event";
 
 export const metadata: Metadata = {
@@ -58,6 +59,10 @@ async function EventContent({ params }: PageParams) {
 
   return (
     <>
+      <div className="mb-6 flex justify-end">
+        <ScanButton eventId={eventId} eventTitle={result.data.title} />
+      </div>
+
       <DashboardEventDetail event={result.data} />
 
       <div className="mt-12">
