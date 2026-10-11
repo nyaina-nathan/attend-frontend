@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { EventDetail } from "@/app/lib/types";
 import LocalDateTime from "../../event/LocalDateTime";
+import ScanButton from "../../scanner/ScanButton";
 import { ArrowRight, Calendar, Globe, Lock, MapPin } from "../../ui/icons";
 import { RoleBadge, StatusBadge } from "../Badges";
 import DashboardEventTiers from "./DashboardEventTiers";
@@ -17,20 +18,13 @@ const eyebrow =
 export default function DashboardEventDetail({ event }: { event: EventDetail }) {
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href="/dashboard/events"
-          className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-soft transition-colors duration-300 ease-brutal hover:text-accent"
-        >
-          <ArrowRight className="h-4 w-4 rotate-180" />
-          Back to my events
-        </Link>
-        <EditEventButton
-          eventId={event.id}
-          startTime={event.startTime}
-          role={event.myRole}
-        />
-      </div>
+      <Link
+        href="/dashboard/events"
+        className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-ink-soft transition-colors duration-300 ease-brutal hover:text-accent"
+      >
+        <ArrowRight className="h-4 w-4 rotate-180" />
+        Back to my events
+      </Link>
 
       <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -49,6 +43,15 @@ export default function DashboardEventDetail({ event }: { event: EventDetail }) 
         <h1 className="font-display text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl lg:text-5xl">
           {event.title}
         </h1>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <EditEventButton
+            eventId={event.id}
+            startTime={event.startTime}
+            role={event.myRole}
+          />
+          <ScanButton eventId={event.id} eventTitle={event.title} />
+        </div>
 
         <div className="flex flex-col gap-1.5 text-base text-ink-soft">
           <span className="flex items-center gap-2">

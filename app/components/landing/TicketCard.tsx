@@ -38,7 +38,7 @@ export default function TicketCard({
           </span>
         </div>
 
-        <div className="grid grid-cols-[1fr_auto] gap-4 p-5">
+        <div className="grid gap-4 p-5 sm:grid-cols-[1fr_auto]">
           <div className="flex min-w-0 flex-col gap-3">
             <p className="font-display text-xl font-bold leading-tight">
               {title}
@@ -60,13 +60,13 @@ export default function TicketCard({
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-2 border-l-2 border-dashed border-ink pl-4">
-                    <QRCodeSVG
-                      value={code}      // the UUID, nothing else
-                      size={220}
-                      level="M"
-                      marginSize={4}
-                    />
+          <div className="flex flex-col items-center justify-center gap-2 border-t-2 border-dashed border-ink pt-4 sm:border-l-2 sm:border-t-0 sm:pl-4 sm:pt-0">
+            <QRCodeSVG
+              value={code}      // the UUID, nothing else
+              size={220}
+              level="M"
+              marginSize={4}
+            />
             <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">
               Scan at door
             </span>
