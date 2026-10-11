@@ -257,3 +257,13 @@ export interface Organizer {
   fullName: string;
   eventRole: EventRole;
 }
+
+/* --------------------------------------------------------------------- users */
+
+/** A user row from `GET /users` (search) — the subset the UI needs. */
+export interface UserSummary {
+  id: string;
+  email: string;
+  fullName: string;
+  username: string;
+}

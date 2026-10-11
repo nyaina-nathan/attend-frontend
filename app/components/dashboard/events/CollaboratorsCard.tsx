@@ -1,13 +1,14 @@
 import { initials } from "@/app/lib/format";
 import type { EventRole, Organizer } from "@/app/lib/types";
 import { RoleBadge } from "../Badges";
+import AddCollaboratorButton from "./AddCollaboratorButton";
 import RemoveOrganizerButton from "./RemoveOrganizerButton";
 
 /**
  * Read-only list of an event's organizers, built from
  * `GET /events/{eventId}/organizers`. Visible to every organizer; the Remove
- * action is shown only to the event `CREATOR`, and never on the `CREATOR`'s own
- * row (the API rejects that with `409`).
+ * and Add actions are shown only to the event `CREATOR`, and Remove is never
+ * offered on the `CREATOR`'s own row (the API rejects that with `409`).
  */
 export default function CollaboratorsCard({
   eventId,
@@ -18,20 +19,29 @@ export default function CollaboratorsCard({
   organizers: Organizer[];
   myRole: EventRole | null;
 }) {
-  const canRemove = myRole === "CREATOR";
+  const isCreator = myRole === "CREATOR";
+  const excludeUserIds = organizers.map((organizer) => organizer.userId);
 
   return (
     <section aria-labelledby="event-collaborators">
-      <div className="flex items-center justify-between gap-3">
-        <h2
-          id="event-collaborators"
-          className="font-display text-xl font-bold tracking-tight"
-        >
-          Collaborators
-        </h2>
-        <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
-          {organizers.length} {organizers.length === 1 ? "person" : "people"}
-        </span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h2
+            id="event-collaborators"
+            className="font-display text-xl font-bold tracking-tight"
+          >
+            Collaborators
+          </h2>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
+            {organizers.length} {organizers.length === 1 ? "person" : "people"}
+          </span>
+        </div>
+        {isCreator ? (
+          <AddCollaboratorButton
+            eventId={eventId}
+            excludeUserIds={excludeUserIds}
+          />
+        ) : null}
       </div>
 
       {organizers.length === 0 ? (
@@ -65,7 +75,7 @@ export default function CollaboratorsCard({
 
                 <div className="flex items-center gap-3">
                   <RoleBadge role={organizer.eventRole} />
-                  {canRemove && !isCreatorRow ? (
+                  {isCreator && !isCreatorRow ? (
                     <RemoveOrganizerButton
                       eventId={eventId}
                       organizerId={organizer.id}
