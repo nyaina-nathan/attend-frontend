@@ -5,8 +5,8 @@ import { MapPin } from "../../ui/icons";
 import { StatusBadge } from "../Badges";
 
 /**
- * One event the caller hosts. Links to the event page, where `OrganizerBar`
- * exposes the management tools (tiers, attendees, stats, scan, team).
+ * One event the caller hosts. Links to the dashboard event page, where the
+ * management tools (tiers, attendees, stats, scan, team) will live.
  *
  * `EventSummary` carries no `isPublic`, so a per-event privacy badge cannot be
  * rendered here; the visibility filter still works via the query string.
@@ -17,7 +17,7 @@ export default function DashboardEventCard({ event }: { event: EventSummary }) {
 
   return (
     <Link
-      href={`/events/${event.id}`}
+      href={`/dashboard/events/${event.id}`}
       className="group flex h-full flex-col rounded-2xl border-2 border-ink bg-paper shadow-brutal transition-all duration-500 ease-brutal hover:-translate-y-1.5 hover:shadow-brutal-lg"
     >
       <div className="flex items-start gap-3 p-4 sm:gap-4 sm:p-5">
