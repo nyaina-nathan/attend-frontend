@@ -66,6 +66,20 @@ export interface EventSummary {
   minPrice: number | null;
 }
 
+/**
+ * One attendee row from `GET /events/{eventId}/tickets` (organizer view). The
+ * event itself is implied by the request, so it isn't repeated on the row.
+ */
+export interface AttendeeTicket {
+  id: string;
+  owner: { id: string; fullName: string; username: string };
+  tier: { id: string; tierName: string };
+  pricePaid: number;
+  ticketStatus: TicketStatus;
+  checkedInAt: string | null;
+  createdAt: string;
+}
+
 /** Request body for `POST /events` (see docs/openapi.yaml). */
 export interface EventCreateInput {
   title: string;

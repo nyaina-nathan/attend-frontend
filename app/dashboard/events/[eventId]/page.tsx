@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import AttendeesSection from "@/app/components/dashboard/events/AttendeesSection";
 import CollaboratorsSection from "@/app/components/dashboard/events/CollaboratorsSection";
 import CollaboratorsSkeleton from "@/app/components/dashboard/events/CollaboratorsSkeleton";
 import DashboardEventDetail from "@/app/components/dashboard/events/DashboardEventDetail";
@@ -66,6 +67,10 @@ async function EventContent({ params }: PageParams) {
             myRole={result.data.myRole}
           />
         </Suspense>
+      </div>
+
+      <div className="mt-12">
+        <AttendeesSection eventId={eventId} />
       </div>
     </>
   );
