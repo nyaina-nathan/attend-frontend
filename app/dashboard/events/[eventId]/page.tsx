@@ -70,7 +70,7 @@ async function EventContent({ params }: PageParams) {
       </div>
 
       <div className="mt-12">
-        <AttendeesSection eventId={eventId} />
+        <AttendeesSection eventId={eventId} tiers={result.data.tiers} />
       </div>
     </>
   );
