@@ -1,21 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Button from "../ui/Button";
 import { QrCode } from "../ui/icons";
 import { Scanner } from "./Scanner";
 
 /**
- * "Scan" trigger for the organizer event detail page. Opens the camera in a
- * modal overlay; the `Scanner` inside owns the check-in flow and calls
- * `onClose` from its header. The scanner mounts only while open so the camera
- * stream is released on dismiss.
+ * "Scan" trigger for organizers. Opens the camera in a modal overlay; the
+ * `Scanner` inside owns the check-in flow and calls `onClose` from its header.
+ * The scanner mounts only while open so the camera stream is released on
+ * dismiss. `variant` lets the trigger match its surroundings (e.g. an outline
+ * button beside a card's primary action).
  */
 export default function ScanButton({
   eventId,
   eventTitle,
+  variant = "accent",
+  className,
 }: {
   eventId: string;
   eventTitle: string;
+  variant?: "accent" | "outline";
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -36,14 +42,14 @@ export default function ScanButton({
 
   return (
     <>
-      <button
-        type="button"
+      <Button
+        variant={variant}
+        className={className}
+        icon={<QrCode className="h-4 w-4" />}
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-accent px-4 py-2 text-xs font-semibold text-paper shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
       >
-        <QrCode className="h-3.5 w-3.5" />
         Scan
-      </button>
+      </Button>
 
       {open ? (
         <div

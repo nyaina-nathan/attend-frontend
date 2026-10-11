@@ -3,8 +3,9 @@
 import { formatCount, formatCountdown } from "@/app/lib/format";
 import type { NextOrganizingEvent } from "@/app/lib/types";
 import LocalDateTime from "../event/LocalDateTime";
+import ScanButton from "../scanner/ScanButton";
 import Button from "../ui/Button";
-import { ArrowUpRight, Calendar, MapPin, QrCode } from "../ui/icons";
+import { ArrowUpRight, Calendar, MapPin } from "../ui/icons";
 import { useNow } from "./useNow";
 import { RoleBadge, StatusBadge } from "./Badges";
 
@@ -143,13 +144,11 @@ export default function NextEventCard({
         >
           Manage
         </Button>
-        <Button
-          href={`/dashboard/events/${event.id}/scan`}
+        <ScanButton
+          eventId={event.id}
+          eventTitle={event.title}
           variant="outline"
-          icon={<QrCode className="h-4 w-4" />}
-        >
-          Scan
-        </Button>
+        />
       </div>
     </section>
   );
