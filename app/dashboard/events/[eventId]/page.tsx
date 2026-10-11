@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import CollaboratorsSection from "@/app/components/dashboard/events/CollaboratorsSection";
+import CollaboratorsSkeleton from "@/app/components/dashboard/events/CollaboratorsSkeleton";
 import DashboardEventDetail from "@/app/components/dashboard/events/DashboardEventDetail";
 import DashboardEventSkeleton from "@/app/components/dashboard/events/DashboardEventSkeleton";
 import { getEventResult } from "@/app/lib/event";
@@ -53,5 +55,18 @@ async function EventContent({ params }: PageParams) {
   }
   if (result.data.myRole === null) notFound();
 
-  return <DashboardEventDetail event={result.data} />;
+  return (
+    <>
+      <DashboardEventDetail event={result.data} />
+
+      <div className="mt-12">
+        <Suspense fallback={<CollaboratorsSkeleton />}>
+          <CollaboratorsSection
+            eventId={eventId}
+            myRole={result.data.myRole}
+          />
+        </Suspense>
+      </div>
+    </>
+  );
 }

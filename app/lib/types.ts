@@ -243,3 +243,17 @@ export interface InvitationsQuery {
   page: number;
   size: number;
 }
+
+/* ---------------------------------------------------------------- organizers */
+
+/**
+ * One `event_organizer` row from `GET /events/{eventId}/organizers`. `id` is the
+ * row id (used to remove it); `userId` is the underlying user.
+ */
+export interface Organizer {
+  id: string;
+  userId: string;
+  username: string;
+  fullName: string;
+  eventRole: EventRole;
+}
