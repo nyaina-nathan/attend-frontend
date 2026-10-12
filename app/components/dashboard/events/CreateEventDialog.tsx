@@ -139,6 +139,7 @@ export default function CreateEventDialog() {
       startTime: localDateTimeInputToISO(draft.startTime) as string,
       endTime: localDateTimeInputToISO(draft.endTime) as string,
       isPublic: tierPayload.length === 0 ? false : draft.isPublic,
+      priceUnit: draft.priceUnit.trim() || "USD",
     };
     if (draft.description.trim()) body.description = draft.description.trim();
     if (draft.location.trim()) body.location = draft.location.trim();

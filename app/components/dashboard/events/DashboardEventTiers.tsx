@@ -9,9 +9,11 @@ import TierCard from "./TierCard";
 export default function DashboardEventTiers({
   eventId,
   tiers,
+  priceUnit,
 }: {
   eventId: string;
   tiers: Tier[];
+  priceUnit: string;
 }) {
   return (
     <section aria-labelledby="event-tiers">
@@ -32,7 +34,7 @@ export default function DashboardEventTiers({
       ) : (
         <ul className="mt-3 flex flex-col gap-3">
           {tiers.map((tier) => (
-            <TierCard key={tier.id} tier={tier} />
+            <TierCard key={tier.id} tier={tier} priceUnit={priceUnit} />
           ))}
         </ul>
       )}

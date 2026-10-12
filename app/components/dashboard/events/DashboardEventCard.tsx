@@ -13,7 +13,7 @@ import { StatusBadge } from "../Badges";
  */
 export default function DashboardEventCard({ event }: { event: EventSummary }) {
   const { day, month } = formatEventDay(event.startTime);
-  const price = formatPrice(event.minPrice);
+  const price = formatPrice(event.minPrice, event.priceUnit);
 
   return (
     <Link

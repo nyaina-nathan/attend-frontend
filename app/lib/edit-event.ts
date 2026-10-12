@@ -18,6 +18,7 @@ export function eventDraftFromDetail(event: EventDetail): EventDraft {
     description: event.description ?? "",
     location: event.location ?? "",
     isPublic: event.isPublic,
+    priceUnit: event.priceUnit ?? "USD",
     startTime: isoToLocalDateTimeInput(event.startTime),
     endTime: isoToLocalDateTimeInput(event.endTime),
   };
@@ -48,6 +49,11 @@ export function buildEventUpdateInput(
   }
   if (draft.isPublic !== initial.isPublic) {
     input.isPublic = draft.isPublic;
+  }
+
+  const priceUnit = trimmed(draft.priceUnit) || "USD";
+  if (priceUnit !== (trimmed(initial.priceUnit) || "USD")) {
+    input.priceUnit = priceUnit;
   }
 
   const startTime = localDateTimeInputToISO(draft.startTime);

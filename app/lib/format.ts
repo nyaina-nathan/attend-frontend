@@ -78,12 +78,49 @@ export function formatEventDateTime(iso: string, timeZone?: string): string {
   return `${day} · ${time}`;
 }
 
-export function formatPrice(minPrice: number | null | undefined): string {
-  if (minPrice == null || minPrice <= 0) return "Free";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(minPrice);
+/** Formatter per unit code, or `null` when the unit isn't an ISO-4217 code. */
+const priceFormatters = new Map<string, Intl.NumberFormat | null>();
+
+function currencyFormatter(unit: string): Intl.NumberFormat | null {
+  const cached = priceFormatters.get(unit);
+  if (cached !== undefined) return cached;
+
+  let formatter: Intl.NumberFormat | null = null;
+  try {
+    formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: unit,
+      maximumFractionDigits: 2,
+    });
+  } catch {
+    // Not an ISO-4217 code (free-form unit): fall back to a plain number.
+    formatter = null;
+  }
+  priceFormatters.set(unit, formatter);
+  return formatter;
+}
+
+const decimalFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Price label for an event amount. Known ISO-4217 units use a currency symbol
+ * (`$25.00`, `€25.00`); free-form units are appended as a code (`25.00 PTS`).
+ * Defaults to `USD` so callers that don't know the unit stay unchanged.
+ */
+export function formatPrice(
+  amount: number | null | undefined,
+  unit: string = "USD",
+): string {
+  if (amount == null || amount <= 0) return "Free";
+
+  const code = unit.trim().toUpperCase() || "USD";
+  const formatter = currencyFormatter(code);
+  if (formatter) return formatter.format(amount);
+
+  return `${decimalFormatter.format(amount)} ${code}`;
 }
 
 const moneyFormatter = new Intl.NumberFormat("en-US", {

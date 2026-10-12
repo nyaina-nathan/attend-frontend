@@ -11,6 +11,8 @@ export interface EventDraft {
   description: string;
   location: string;
   isPublic: boolean;
+  /** Free-form currency/unit code labelling every amount on the event. */
+  priceUnit: string;
   /** Local `datetime-local` value (`YYYY-MM-DDTHH:mm`). */
   startTime: string;
   /** Local `datetime-local` value (`YYYY-MM-DDTHH:mm`). */
@@ -29,6 +31,7 @@ export function emptyEventDraft(): EventDraft {
     description: "",
     location: "",
     isPublic: true,
+    priceUnit: "USD",
     startTime: "",
     endTime: "",
   };
@@ -51,6 +54,10 @@ export function validateEventDraft(draft: EventDraft): EventErrors {
   const errors: EventErrors = {};
 
   if (!draft.title.trim()) errors.title = "Give your event a title.";
+
+  if (draft.priceUnit.trim().length > 10) {
+    errors.priceUnit = "Keep the unit to 10 characters or fewer.";
+  }
 
   const start = parseLocal(draft.startTime);
   const end = parseLocal(draft.endTime);

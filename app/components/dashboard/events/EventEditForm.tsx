@@ -29,6 +29,7 @@ function sameDraft(a: EventDraft, b: EventDraft): boolean {
     a.description === b.description &&
     a.location === b.location &&
     a.isPublic === b.isPublic &&
+    a.priceUnit === b.priceUnit &&
     a.startTime === b.startTime &&
     a.endTime === b.endTime
   );

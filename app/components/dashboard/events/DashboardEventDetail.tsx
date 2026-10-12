@@ -85,7 +85,11 @@ export default function DashboardEventDetail({ event }: { event: EventDetail }) 
             )}
           </section>
 
-          <DashboardEventTiers eventId={event.id} tiers={event.tiers ?? []} />
+          <DashboardEventTiers
+            eventId={event.id}
+            tiers={event.tiers ?? []}
+            priceUnit={event.priceUnit}
+          />
         </div>
 
         <aside className="lg:col-span-1">

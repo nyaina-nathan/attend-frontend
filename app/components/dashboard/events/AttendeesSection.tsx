@@ -26,9 +26,11 @@ const pagerButton =
 export default function AttendeesSection({
   eventId,
   tiers,
+  priceUnit,
 }: {
   eventId: string;
   tiers: { id: string; tierName: string }[];
+  priceUnit: string;
 }) {
   const router = useRouter();
 
@@ -174,7 +176,11 @@ export default function AttendeesSection({
               }`}
             >
               {attendees.map((attendee) => (
-                <AttendeeRow key={attendee.id} attendee={attendee} />
+                <AttendeeRow
+                  key={attendee.id}
+                  attendee={attendee}
+                  priceUnit={priceUnit}
+                />
               ))}
             </ul>
 

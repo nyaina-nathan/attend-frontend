@@ -30,6 +30,8 @@ export interface EventDetail {
   endTime: string;
   isPublic: boolean;
   location: string | null;
+  /** Currency/unit code labelling the event's tier prices. */
+  priceUnit: string;
   status: EventStatus;
   /** Caller's role on this event, or `null` for anonymous/non-organizers. */
   myRole: EventRole | null;
@@ -46,6 +48,8 @@ export interface Ticket {
     title: string;
     startTime: string;
     location: string | null;
+    /** Currency/unit code applying to the ticket's `pricePaid`. */
+    priceUnit: string;
   };
   tier: { id: string; tierName: string };
   pricePaid: number;
@@ -81,6 +85,8 @@ export interface EventSummary {
   status: EventStatus;
   /** Lowest tier price; `null` when the event has no tiers yet. */
   minPrice: number | null;
+  /** Currency/unit code applying to `minPrice`. */
+  priceUnit: string;
 }
 
 /**
@@ -107,6 +113,8 @@ export interface EventCreateInput {
   endTime: string;
   isPublic?: boolean;
   location?: string;
+  /** Free-form currency/unit code; defaults to `USD` server-side. */
+  priceUnit?: string;
 }
 
 /** Request body for `PATCH /events/{eventId}`. Only changed fields are sent. */
@@ -119,6 +127,8 @@ export interface EventUpdateInput {
   /** ISO UTC. */
   endTime?: string;
   isPublic?: boolean;
+  /** New free-form currency/unit code (relabels, never converts). */
+  priceUnit?: string;
 }
 
 /** Request body for `POST /events/{eventId}/tiers`. */
@@ -205,6 +215,8 @@ export interface NextOrganizingEvent {
   startTime: string;
   endTime: string;
   location: string | null;
+  /** Currency/unit code of this event. */
+  priceUnit: string;
   status: EventStatus;
   myRole: EventRole;
   totalCapacity: number;

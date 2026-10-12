@@ -7,7 +7,13 @@ import TierActions from "./TierActions";
  * One ticket tier: name, price, availability and a progress bar, plus the
  * organizer actions (edit / delete).
  */
-export default function TierCard({ tier }: { tier: Tier }) {
+export default function TierCard({
+  tier,
+  priceUnit,
+}: {
+  tier: Tier;
+  priceUnit: string;
+}) {
   const issued = issuedCount(tier);
   const pct =
     tier.capacity > 0
@@ -21,7 +27,7 @@ export default function TierCard({ tier }: { tier: Tier }) {
           {tier.tierName}
         </span>
         <span className="shrink-0 font-display text-lg font-bold">
-          {formatPrice(tier.price)}
+          {formatPrice(tier.price, priceUnit)}
         </span>
       </div>
 

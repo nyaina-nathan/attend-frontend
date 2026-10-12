@@ -48,6 +48,17 @@ export default function EventFields({
         placeholder="Blue Note, 131 W 3rd St"
       />
 
+      <Field
+        label="Currency / unit"
+        name="priceUnit"
+        value={draft.priceUnit}
+        maxLength={10}
+        error={errors.priceUnit}
+        onChange={(event) => onChange({ priceUnit: event.target.value })}
+        placeholder="USD"
+        hint="Labels every amount on this event. Changing it relabels, it doesn’t convert."
+      />
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
           label="Starts"

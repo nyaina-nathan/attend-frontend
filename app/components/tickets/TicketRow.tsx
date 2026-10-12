@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { formatEventDateTime, formatEventDay, formatMoney } from "@/app/lib/format";
+import { formatEventDateTime, formatEventDay, formatPrice } from "@/app/lib/format";
 import type { Ticket } from "@/app/lib/types";
 import { useMounted } from "../events/useMounted";
 import { Calendar, MapPin, QrCode, Ticket as TicketIcon } from "../ui/icons";
@@ -61,7 +61,7 @@ export default function TicketRow({ ticket }: { ticket: Ticket }) {
             {ticket.tier.tierName}
           </span>
           <span className="font-display text-lg font-bold">
-            {ticket.pricePaid > 0 ? formatMoney(ticket.pricePaid) : "Free"}
+            {formatPrice(ticket.pricePaid, ticket.event.priceUnit)}
           </span>
           <button
             type="button"

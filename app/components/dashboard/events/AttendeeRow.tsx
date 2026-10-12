@@ -1,4 +1,4 @@
-import { formatMoney, initials } from "@/app/lib/format";
+import { formatPrice, initials } from "@/app/lib/format";
 import type { AttendeeTicket } from "@/app/lib/types";
 import LocalDateTime from "../../event/LocalDateTime";
 import TicketStatusBadge from "../../tickets/TicketStatusBadge";
@@ -8,7 +8,13 @@ import TicketStatusBadge from "../../tickets/TicketStatusBadge";
  * who they are, which tier they hold, what they paid, the ticket status and
  * when they were checked in.
  */
-export default function AttendeeRow({ attendee }: { attendee: AttendeeTicket }) {
+export default function AttendeeRow({
+  attendee,
+  priceUnit,
+}: {
+  attendee: AttendeeTicket;
+  priceUnit: string;
+}) {
   return (
     <li className="flex flex-wrap items-center gap-4 rounded-2xl border-2 border-ink bg-paper p-4 shadow-brutal-sm">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-ink bg-brand">
@@ -31,7 +37,7 @@ export default function AttendeeRow({ attendee }: { attendee: AttendeeTicket }) 
       </span>
 
       <span className="font-display text-base font-bold">
-        {attendee.pricePaid > 0 ? formatMoney(attendee.pricePaid) : "Free"}
+        {formatPrice(attendee.pricePaid, priceUnit)}
       </span>
 
       <TicketStatusBadge status={attendee.ticketStatus} />
