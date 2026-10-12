@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { EventDetail } from "@/app/lib/types";
 import LocalDateTime from "../../event/LocalDateTime";
+import LocationViewer from "../../event/LocationViewer";
 import ScanButton from "../../scanner/ScanButton";
 import { ArrowRight, Calendar, Globe, Lock, MapPin } from "../../ui/icons";
 import { RoleBadge, StatusBadge } from "../Badges";
@@ -90,6 +91,26 @@ export default function DashboardEventDetail({ event }: { event: EventDetail }) 
             tiers={event.tiers ?? []}
             priceUnit={event.priceUnit}
           />
+
+          {event.latitude !== null && event.longitude !== null ? (
+            <section aria-labelledby="event-location">
+              <h2
+                id="event-location"
+                className="font-display text-xl font-bold tracking-tight"
+              >
+                Location
+              </h2>
+              <div className="mt-3 overflow-hidden rounded-2xl border-2 border-ink">
+                <LocationViewer
+                  location={{
+                    lat: event.latitude,
+                    lng: event.longitude,
+                    label: event.location,
+                  }}
+                />
+              </div>
+            </section>
+          ) : null}
         </div>
 
         <aside className="lg:col-span-1">

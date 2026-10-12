@@ -10,6 +10,9 @@ export interface EventDraft {
   title: string;
   description: string;
   location: string;
+  /** Optional coordinate pair; both set or both `null`. */
+  latitude: number | null;
+  longitude: number | null;
   isPublic: boolean;
   /** Free-form currency/unit code labelling every amount on the event. */
   priceUnit: string;
@@ -30,6 +33,8 @@ export function emptyEventDraft(): EventDraft {
     title: "",
     description: "",
     location: "",
+    latitude: null,
+    longitude: null,
     isPublic: true,
     priceUnit: "USD",
     startTime: "",
@@ -65,6 +70,19 @@ export function validateEventDraft(draft: EventDraft): EventErrors {
   if (end === undefined) errors.endTime = "Pick an end date and time.";
   if (start !== undefined && end !== undefined && end <= start) {
     errors.endTime = "The end must be after the start.";
+  }
+
+  const hasLat = draft.latitude !== null;
+  const hasLng = draft.longitude !== null;
+  if (hasLat !== hasLng) {
+    errors.latitude = "Pick the location on the map to set both coordinates.";
+  } else if (hasLat && hasLng) {
+    if (draft.latitude! < -90 || draft.latitude! > 90) {
+      errors.latitude = "Latitude must be between -90 and 90.";
+    }
+    if (draft.longitude! < -180 || draft.longitude! > 180) {
+      errors.longitude = "Longitude must be between -180 and 180.";
+    }
   }
 
   return errors;

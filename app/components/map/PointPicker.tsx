@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { defaultMarkerIcon } from "./markerIcon";
 
 interface NominatimAddress {
   road?: string;
@@ -26,11 +27,23 @@ interface Place {
   full: string | null;
 }
 
-interface PickedPoint extends Partial<Place> {
+/** A point the user dropped on the map, with its reverse-geocoded address. */
+export interface PickedLocation {
   lat: number;
   lng: number;
-  loading: boolean;
-  error?: boolean;
+  street: string | null;
+  city: string | null;
+  full: string | null;
+}
+
+interface PointPickerProps {
+  /** Current coordinates to mark and centre on; `null` for the default view. */
+  value?: { lat: number; lng: number } | null;
+  /** Called after a click is reverse-geocoded. */
+  onPick: (location: PickedLocation) => void;
+  /** Initial centre when no `value` is given. */
+  defaultCenter?: [number, number];
+  defaultZoom?: number;
 }
 
 async function reverseGeocode(lat: number, lng: number): Promise<Place> {
@@ -51,47 +64,72 @@ async function reverseGeocode(lat: number, lng: number): Promise<Place> {
 }
 
 interface ClickHandlerProps {
-  onPick: (point: PickedPoint) => void;
+  onPick: (location: PickedLocation) => void;
+  onStatus: (status: { loading: boolean; error?: boolean }) => void;
 }
 
-function ClickHandler({ onPick }: ClickHandlerProps) {
+function ClickHandler({ onPick, onStatus }: ClickHandlerProps) {
   useMapEvents({
     click: async (e) => {
       const { lat, lng } = e.latlng;
-      onPick({ lat, lng, loading: true });
+      onStatus({ loading: true });
       try {
         const place = await reverseGeocode(lat, lng);
-        onPick({ lat, lng, ...place, loading: false });
+        onStatus({ loading: false });
+        onPick({ lat, lng, ...place });
       } catch {
-        onPick({ lat, lng, loading: false, error: true });
+        // Coordinates are still useful without an address, so report them too.
+        onStatus({ loading: false, error: true });
+        onPick({ lat, lng, street: null, city: null, full: null });
       }
     },
   });
   return null;
 }
 
-export default function PointPicker() {
-  const [point, setPoint] = useState<PickedPoint | null>(null);
+/**
+ * Click-to-pick map used by the event form. Reports the chosen coordinates (and
+ * address) through `onPick` so the caller can store `latitude`/`longitude`
+ * alongside the manually typed location.
+ */
+export default function PointPicker({
+  value = null,
+  onPick,
+  defaultCenter = [-18.9, 47.5],
+  defaultZoom = 12,
+}: PointPickerProps) {
+  const [status, setStatus] = useState<{ loading: boolean; error?: boolean }>({
+    loading: false,
+  });
+
+  const position: [number, number] | null = value
+    ? [value.lat, value.lng]
+    : null;
 
   return (
     <>
       <MapContainer
-        center={[-18.9, 47.5]}
-        zoom={12}
-        style={{ height: 400, width: "100%" }}
+        center={position ?? defaultCenter}
+        zoom={position ? 15 : defaultZoom}
+        scrollWheelZoom={false}
+        style={{ height: 320, width: "100%" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <ClickHandler onPick={setPoint} />
-        {point && <Marker position={[point.lat, point.lng]} />}
+        <ClickHandler onPick={onPick} onStatus={setStatus} />
+        {position && <Marker position={position} icon={defaultMarkerIcon} />}
       </MapContainer>
 
-      {point?.loading && <p>Looking up address…</p>}
-      {point?.error && <p>Could not find an address for this point.</p>}
-      {(point?.street || point?.city) && (
-        <p>
-          {[point.street, point.city].filter(Boolean).join(", ")}
-        </p>
-      )}
+      <div className="mt-2 flex min-h-5 items-center gap-2 text-xs text-ink-soft">
+        {status.loading ? (
+          <span>Looking up address…</span>
+        ) : status.error ? (
+          <span className="font-semibold text-danger">
+            Could not find an address for this point.
+          </span>
+        ) : (
+          <span>Click the map to drop a pin at the exact location.</span>
+        )}
+      </div>
     </>
   );
 }

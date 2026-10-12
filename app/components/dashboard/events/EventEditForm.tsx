@@ -28,6 +28,8 @@ function sameDraft(a: EventDraft, b: EventDraft): boolean {
     a.title === b.title &&
     a.description === b.description &&
     a.location === b.location &&
+    a.latitude === b.latitude &&
+    a.longitude === b.longitude &&
     a.isPublic === b.isPublic &&
     a.priceUnit === b.priceUnit &&
     a.startTime === b.startTime &&

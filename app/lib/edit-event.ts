@@ -17,6 +17,8 @@ export function eventDraftFromDetail(event: EventDetail): EventDraft {
     title: event.title,
     description: event.description ?? "",
     location: event.location ?? "",
+    latitude: event.latitude,
+    longitude: event.longitude,
     isPublic: event.isPublic,
     priceUnit: event.priceUnit ?? "USD",
     startTime: isoToLocalDateTimeInput(event.startTime),
@@ -46,6 +48,15 @@ export function buildEventUpdateInput(
   }
   if (trimmed(draft.location) !== trimmed(initial.location)) {
     input.location = trimmed(draft.location);
+  }
+  // Coordinates can be set or moved, never cleared (the API ignores null).
+  if (
+    draft.latitude !== null &&
+    draft.longitude !== null &&
+    (draft.latitude !== initial.latitude || draft.longitude !== initial.longitude)
+  ) {
+    input.latitude = draft.latitude;
+    input.longitude = draft.longitude;
   }
   if (draft.isPublic !== initial.isPublic) {
     input.isPublic = draft.isPublic;

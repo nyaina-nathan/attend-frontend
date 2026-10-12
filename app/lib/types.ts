@@ -30,6 +30,9 @@ export interface EventDetail {
   endTime: string;
   isPublic: boolean;
   location: string | null;
+  /** Optional coordinate pair; both are present or both `null`. */
+  latitude: number | null;
+  longitude: number | null;
   /** Currency/unit code labelling the event's tier prices. */
   priceUnit: string;
   status: EventStatus;
@@ -82,6 +85,9 @@ export interface EventSummary {
   startTime: string;
   endTime: string;
   location: string | null;
+  /** Optional coordinate pair; both are present or both `null`. */
+  latitude: number | null;
+  longitude: number | null;
   status: EventStatus;
   /** Lowest tier price; `null` when the event has no tiers yet. */
   minPrice: number | null;
@@ -113,6 +119,9 @@ export interface EventCreateInput {
   endTime: string;
   isPublic?: boolean;
   location?: string;
+  /** Optional coordinate pair; provide both or neither. */
+  latitude?: number;
+  longitude?: number;
   /** Free-form currency/unit code; defaults to `USD` server-side. */
   priceUnit?: string;
 }
@@ -122,6 +131,9 @@ export interface EventUpdateInput {
   title?: string;
   description?: string;
   location?: string;
+  /** Optional coordinate pair; provide both or neither. */
+  latitude?: number;
+  longitude?: number;
   /** ISO UTC. */
   startTime?: string;
   /** ISO UTC. */

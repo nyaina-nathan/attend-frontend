@@ -143,6 +143,10 @@ export default function CreateEventDialog() {
     };
     if (draft.description.trim()) body.description = draft.description.trim();
     if (draft.location.trim()) body.location = draft.location.trim();
+    if (draft.latitude !== null && draft.longitude !== null) {
+      body.latitude = draft.latitude;
+      body.longitude = draft.longitude;
+    }
 
     let eventId: string | null = null;
     try {

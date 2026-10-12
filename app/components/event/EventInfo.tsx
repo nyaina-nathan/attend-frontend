@@ -2,6 +2,7 @@ import { buildIcsDataUrl } from "@/app/lib/ics";
 import type { EventDetail } from "@/app/lib/types";
 import { Calendar, MapPin } from "../ui/icons";
 import LocalDateTime from "./LocalDateTime";
+import LocationViewer from "./LocationViewer";
 
 function safeFileName(title: string): string {
   const slug = title
@@ -12,8 +13,8 @@ function safeFileName(title: string): string {
 }
 
 /**
- * Long-form event content: description, schedule/venue details, and an
- * "Add to calendar" download. Map link is intentionally left as a future spot.
+ * Long-form event content: description, schedule/venue details, an embedded map
+ * of the saved coordinates, and an "Add to calendar" download.
  */
 export default function EventInfo({ event }: { event: EventDetail }) {
   const ics = buildIcsDataUrl(event);
@@ -102,12 +103,23 @@ export default function EventInfo({ event }: { event: EventDetail }) {
           Add to calendar
         </a>
 
-        {/* FUTURE: map link — once the schema exposes coordinates or a venue id,
-            render an embedded map / "Open in maps" link here. */}
-        <div className="mt-4 flex items-center gap-2 rounded-xl border-2 border-dashed border-ink/30 px-4 py-3 text-xs text-ink-soft">
-          <MapPin className="h-4 w-4 shrink-0" />
-          Map coming soon.
-        </div>
+        {/* Map of the saved coordinates, when the organizer pinned one. */}
+        {event.latitude !== null && event.longitude !== null ? (
+          <div className="mt-4 overflow-hidden rounded-xl border-2 border-ink">
+            <LocationViewer
+              location={{
+                lat: event.latitude,
+                lng: event.longitude,
+                label: event.location,
+              }}
+            />
+          </div>
+        ) : (
+          <div className="mt-4 flex items-center gap-2 rounded-xl border-2 border-dashed border-ink/30 px-4 py-3 text-xs text-ink-soft">
+            <MapPin className="h-4 w-4 shrink-0" />
+            No map location set.
+          </div>
+        )}
       </section>
     </div>
   );

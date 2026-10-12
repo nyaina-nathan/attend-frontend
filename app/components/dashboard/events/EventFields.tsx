@@ -1,7 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Field from "../../auth/Field";
+import type { PickedLocation } from "../../map/PointPicker";
 import type { EventDraft, EventErrors } from "@/app/lib/create-event";
+
+// Leaflet needs `window` at import time, so the picker loads client-only.
+const PointPicker = dynamic(() => import("../../map/PointPicker"), {
+  ssr: false,
+  loading: () => <div className="h-80 w-full animate-pulse bg-ink/10" />,
+});
 
 const textareaClass =
   "w-full rounded-xl border-2 border-ink bg-paper px-3.5 py-2.5 text-base text-ink outline-none transition-colors duration-300 ease-brutal placeholder:text-ink-soft/60 focus:border-accent";
@@ -16,6 +24,23 @@ export default function EventFields({
   errors: EventErrors;
   onChange: (patch: Partial<EventDraft>) => void;
 }) {
+  const hasCoordinates = draft.latitude !== null && draft.longitude !== null;
+
+  function handlePick(location: PickedLocation) {
+    const patch: Partial<EventDraft> = {
+      latitude: location.lat,
+      longitude: location.lng,
+    };
+    // Suggest an address from the pin only when none was typed; never overwrite.
+    if (!draft.location.trim()) {
+      patch.location =
+        [location.street, location.city].filter(Boolean).join(", ") ||
+        location.full ||
+        "";
+    }
+    onChange(patch);
+  }
+
   return (
     <div className="mt-5 flex flex-col gap-4">
       <Field
@@ -47,6 +72,39 @@ export default function EventFields({
         onChange={(event) => onChange({ location: event.target.value })}
         placeholder="Blue Note, 131 W 3rd St"
       />
+
+      <div className="flex flex-col gap-2 rounded-2xl border-2 border-ink/15 bg-surface p-3">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-xs font-semibold text-ink">
+            Pin the exact spot
+          </span>
+          <span className="text-xs text-ink-soft">Optional</span>
+        </div>
+        <p className="text-xs text-ink-soft">
+          Pick the venue on the map to save its coordinates. Whatever you type in
+          Location above is kept.
+        </p>
+        <div className="overflow-hidden rounded-xl border-2 border-ink">
+          <PointPicker
+            value={
+              hasCoordinates
+                ? { lat: draft.latitude as number, lng: draft.longitude as number }
+                : null
+            }
+            onPick={handlePick}
+          />
+        </div>
+        {errors.latitude || errors.longitude ? (
+          <p className="text-xs font-semibold text-danger">
+            {errors.latitude ?? errors.longitude}
+          </p>
+        ) : hasCoordinates ? (
+          <p className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
+            {(draft.latitude as number).toFixed(5)},{" "}
+            {(draft.longitude as number).toFixed(5)}
+          </p>
+        ) : null}
+      </div>
 
       <Field
         label="Currency / unit"
