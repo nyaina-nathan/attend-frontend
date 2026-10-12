@@ -7,6 +7,7 @@ Backend contract: see `API.md`. Relevant endpoints:
 - `GET /events/{eventId}` (public, with visibility rules)
 - `GET /events/{eventId}/tiers` (same visibility as the event)
 - `POST /tiers/{tierId}/tickets` (auth required)
+- `GET /tiers/{tierId}/check` (auth required)
 - `GET /users/me` (to know whether the visitor is authenticated)
 
 Do not touch design tokens, fonts or colors here. Use the project's existing styling setup.
@@ -77,6 +78,11 @@ export interface Ticket {
   checkedInAt: string | null;
   validUntil: string | null;
   createdAt: string;
+}
+
+/** `GET /tiers/{tierId}/check`: does the caller already hold a ticket here? */
+export interface TierTicketPresence {
+  isPresent: boolean;
 }
 ```
 
@@ -201,6 +207,21 @@ onGet(tier):
       router.push(`/login?redirect=/events/${eventId}`); return
 
   setLoadingTierId(tier.id)
+
+  # 1. Duplicate guard: the check endpoint is per-tier, so fan out across the
+  #    event's tiers to warn about a duplicate anywhere in the event.
+  present = GET /tiers/{t.id}/check for every tier (credentials: "include")
+  401  -> POST /auth/refresh once, retry; if still 401, redirect to login
+  other/paged failure -> fail open (treat as no duplicate)
+
+  if any tier is present:
+      open the "You already have a ticket" confirmation dialog and stop
+      Cancel -> close, nothing else
+      Confirm -> close, purchase(tier)
+  else:
+      purchase(tier)
+
+purchase(tier):
   res = POST /tiers/{tier.id}/tickets   (credentials: "include", empty body)
 
   201 -> setPurchasedTicket(await res.json()); refetch tiers
@@ -214,6 +235,8 @@ onGet(tier):
 
 Rules:
 
+- The duplicate check is UX only: it uses `GET /tiers/{tierId}/check` (counts `VALID`/`USED`, ignores `CANCELLED`/`REFUNDED`). The backend remains the source of truth on whether a duplicate purchase is allowed.
+- The confirmation dialog reuses `ConfirmDialog` with `tone="warning"` and event-level copy that names the tier(s) already held.
 - Block double clicks: while a purchase is in flight, disable all Get ticket buttons.
 - Refetch tiers client-side with `GET /events/{eventId}/tiers` after every purchase attempt (success or failure) so `remaining` is fresh.
 - Parse the error body using the API's error format (`error` code field) rather than matching on message text.
@@ -239,6 +262,7 @@ Rules:
 - [ ] Postponed event shows the banner with the updated dates.
 - [ ] Anonymous click on Get ticket redirects to login and returns to the same event afterwards.
 - [ ] Authenticated purchase shows the QR `TicketCard` and a link to My tickets.
+- [ ] A caller who already holds a VALID/USED ticket anywhere in the event sees the confirmation popup; Cancel buys nothing, Confirm issues the ticket.
 - [ ] Simulated `409 SOLD_OUT` refreshes the tiers and shows the message.
 - [ ] Simulated `409 EVENT_NOT_OPEN` shows "This event is no longer open."
 - [ ] Private event: anonymous gets the login state, non-organizer gets the forbidden state, organizer sees the page.

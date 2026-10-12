@@ -14,6 +14,7 @@ export default function ConfirmDialog({
   confirmLabel,
   pendingLabel = "Working…",
   cancelLabel = "Cancel",
+  tone = "danger",
   pending = false,
   onConfirm,
   onCancel,
@@ -24,6 +25,8 @@ export default function ConfirmDialog({
   confirmLabel: string;
   pendingLabel?: string;
   cancelLabel?: string;
+  /** `danger` paints the confirm button red; `warning` paints it amber. */
+  tone?: "danger" | "warning";
   pending?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -86,7 +89,9 @@ export default function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={pending}
-            className="rounded-full border-2 border-ink bg-danger px-5 py-2.5 text-sm font-semibold text-paper shadow-brutal transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60"
+            className={`rounded-full border-2 border-ink px-5 py-2.5 text-sm font-semibold text-paper shadow-brutal transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60 ${
+              tone === "warning" ? "bg-warning" : "bg-danger"
+            }`}
           >
             {pending ? pendingLabel : confirmLabel}
           </button>

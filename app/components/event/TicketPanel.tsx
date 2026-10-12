@@ -5,8 +5,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiRequest } from "@/app/lib/api";
 import { formatPrice } from "@/app/lib/format";
-import type { EventStatus, Tier, Ticket } from "@/app/lib/types";
+import type {
+  EventStatus,
+  Tier,
+  Ticket,
+  TierTicketPresence,
+} from "@/app/lib/types";
 import TicketCard from "../landing/TicketCard";
+import ConfirmDialog from "../dashboard/events/ConfirmDialog";
 import { Ticket as TicketIcon } from "../ui/icons";
 import TierCard from "./TierCard";
 
@@ -15,6 +21,19 @@ interface Message {
   text: string;
   retryTierId?: string;
 }
+
+/** Tiers already holding one of the caller's tickets, pending confirmation. */
+interface DuplicatePrompt {
+  tier: Tier;
+  presentTierNames: string[];
+}
+
+/** Outcome of the pre-purchase duplicate check. */
+type PresenceResult =
+  | { kind: "present"; names: string[] }
+  | { kind: "none" }
+  | { kind: "unauthorized" }
+  | { kind: "unknown" };
 
 function formatTicketDate(iso: string): string {
   const date = new Date(iso);
@@ -49,6 +68,7 @@ export default function TicketPanel({
   const [loadingTierId, setLoadingTierId] = useState<string | null>(null);
   const [purchasedTicket, setPurchasedTicket] = useState<Ticket | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
+  const [duplicate, setDuplicate] = useState<DuplicatePrompt | null>(null);
 
   const cancelled = eventStatus === "CANCELLED";
   const busy = loadingTierId !== null;
@@ -76,25 +96,58 @@ export default function TicketPanel({
     });
   }
 
-  async function handleGet(tier: Tier) {
-    if (!isAuthenticated) {
-      router.push(loginHref);
-      return;
+  function refreshSession() {
+    return apiRequest("/auth/refresh", {
+      method: "POST",
+      credentials: "include",
+      cache: "no-store",
+    });
+  }
+
+  function checkTier(tierId: string) {
+    return apiRequest<TierTicketPresence>(`/tiers/${tierId}/check`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+  }
+
+  /**
+   * Ask the API which tiers already hold one of the caller's tickets. The check
+   * endpoint is per-tier, so we fan out across the event's tiers to warn about a
+   * duplicate anywhere in the event. A 401 rotates the session once; any other
+   * failure fails open (treated as "no duplicate") so the guard never blocks a
+   * legitimate purchase.
+   */
+  async function checkEventPresence(): Promise<PresenceResult> {
+    try {
+      let results = await Promise.all(tiers.map((tier) => checkTier(tier.id)));
+
+      if (results.some((res) => res.status === 401)) {
+        const refreshed = await refreshSession();
+        if (!refreshed.ok) return { kind: "unauthorized" };
+        results = await Promise.all(tiers.map((tier) => checkTier(tier.id)));
+        if (results.some((res) => res.status === 401)) {
+          return { kind: "unauthorized" };
+        }
+      }
+
+      const names = tiers
+        .filter((_, index) => results[index].ok && results[index].data?.isPresent)
+        .map((tier) => tier.tierName);
+
+      return names.length > 0 ? { kind: "present", names } : { kind: "none" };
+    } catch {
+      return { kind: "unknown" };
     }
+  }
 
-    setLoadingTierId(tier.id);
-    setMessage(null);
-
+  async function purchase(tier: Tier) {
     try {
       let res = await issueTicket(tier.id);
 
       // Access token may have expired: rotate once, then retry.
       if (res.status === 401) {
-        const refreshed = await apiRequest("/auth/refresh", {
-          method: "POST",
-          credentials: "include",
-          cache: "no-store",
-        });
+        const refreshed = await refreshSession();
         if (refreshed.ok) {
           res = await issueTicket(tier.id);
         }
@@ -124,10 +177,56 @@ export default function TicketPanel({
         retryTierId: tier.id,
       });
     } finally {
-      setLoadingTierId(null);
       await refreshTiers();
     }
   }
+
+  async function handleGet(tier: Tier) {
+    if (!isAuthenticated) {
+      router.push(loginHref);
+      return;
+    }
+
+    setMessage(null);
+    setLoadingTierId(tier.id);
+
+    try {
+      const presence = await checkEventPresence();
+
+      if (presence.kind === "unauthorized") {
+        router.push(loginHref);
+        return;
+      }
+
+      if (presence.kind === "present") {
+        setDuplicate({ tier, presentTierNames: presence.names });
+        return;
+      }
+
+      await purchase(tier);
+    } finally {
+      setLoadingTierId(null);
+    }
+  }
+
+  async function confirmDuplicate() {
+    const prompt = duplicate;
+    if (!prompt) return;
+
+    setDuplicate(null);
+    setLoadingTierId(prompt.tier.id);
+    try {
+      await purchase(prompt.tier);
+    } finally {
+      setLoadingTierId(null);
+    }
+  }
+
+  const duplicateDescription = duplicate
+    ? `You already have a ticket for this event (${duplicate.presentTierNames.join(
+        ", ",
+      )}). Buy another one anyway?`
+    : undefined;
 
   return (
     <aside
@@ -238,6 +337,17 @@ export default function TicketPanel({
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={duplicate !== null}
+        tone="warning"
+        title="You already have a ticket"
+        description={duplicateDescription}
+        confirmLabel="Buy another ticket"
+        cancelLabel="Cancel"
+        onConfirm={confirmDuplicate}
+        onCancel={() => setDuplicate(null)}
+      />
     </aside>
   );
 }

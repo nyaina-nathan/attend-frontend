@@ -55,6 +55,14 @@ export interface Ticket {
   createdAt: string;
 }
 
+/**
+ * Response from `GET /tiers/{tierId}/check`: whether the caller already holds a
+ * capacity-consuming ticket (`VALID` or `USED`) in the tier.
+ */
+export interface TierTicketPresence {
+  isPresent: boolean;
+}
+
 /** Response from `POST /tickets/{ticketId}/check-in`. */
 export interface CheckInResponse {
   id: string;
