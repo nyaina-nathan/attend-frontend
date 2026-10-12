@@ -1,4 +1,3 @@
-import AboutProject from "./components/landing/AboutProject";
 import Features from "./components/landing/Features";
 import FinalCta from "./components/landing/FinalCta";
 import Hero from "./components/landing/Hero";
@@ -25,7 +24,6 @@ export default function Home() {
         <HowItWorks />
         <Features />
         <OrganizerSpotlight />
-        <AboutProject />
         <FinalCta />
       </main>
       <Footer />

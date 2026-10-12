@@ -40,7 +40,7 @@ export default async function Footer() {
             </p>
             <div className="flex gap-3">
               <a
-                href="https://github.com"
+                href="https://github.com/nyaina-nathan"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub repository"
@@ -49,7 +49,7 @@ export default async function Footer() {
                 <Github className="h-5 w-5" />
               </a>
               <a
-                href="mailto:hello@attend.dev"
+                href="mailto:nyaina.nathan.2@gmail.com"
                 aria-label="Contact us"
                 className="flex h-11 w-11 items-center justify-center rounded-xl border-2 border-paper/25 text-paper transition-all duration-500 ease-brutal hover:-translate-y-0.5 hover:border-brand hover:text-brand"
               >
@@ -82,9 +82,6 @@ export default async function Footer() {
         <div className="mt-14 flex flex-col items-start justify-between gap-4 border-t-2 border-paper/15 pt-8 sm:flex-row sm:items-center">
           <p className="font-mono text-xs text-paper/50">
             © {year} Attend. All rights reserved.
-          </p>
-          <p className="font-mono text-xs text-paper/50">
-            Built with Spring Boot · PostgreSQL · Next.js
           </p>
         </div>
       </div>
