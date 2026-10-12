@@ -57,11 +57,13 @@ export default function TicketPanel({
   eventStatus,
   initialTiers,
   isAuthenticated,
+  priceUnit,
 }: {
   eventId: string;
   eventStatus: EventStatus;
   initialTiers: Tier[];
   isAuthenticated: boolean;
+  priceUnit: string;
 }) {
   const router = useRouter();
   const [tiers, setTiers] = useState<Tier[]>(initialTiers);
@@ -249,7 +251,10 @@ export default function TicketPanel({
               date={formatTicketDate(purchasedTicket.event.startTime)}
               venue={purchasedTicket.event.location ?? "Online"}
               tier={purchasedTicket.tier.tierName}
-              price={formatPrice(purchasedTicket.pricePaid)}
+              price={formatPrice(
+                purchasedTicket.pricePaid,
+                purchasedTicket.event.priceUnit,
+              )}
               code={`ATT-${purchasedTicket.id.slice(0, 8).toUpperCase()}`}
             />
             <div className="flex flex-wrap gap-3">
@@ -286,6 +291,7 @@ export default function TicketPanel({
                 <TierCard
                   key={tier.id}
                   tier={tier}
+                  priceUnit={priceUnit}
                   disabled={cancelled || busy}
                   loading={loadingTierId === tier.id}
                   disabledReason={

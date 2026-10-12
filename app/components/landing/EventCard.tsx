@@ -13,7 +13,7 @@ const statusStyles: Record<
 
 export default function EventCard({ event }: { event: EventSummary }) {
   const { day, month } = formatEventDay(event.startTime);
-  const price = formatPrice(event.minPrice);
+  const price = formatPrice(event.minPrice, event.priceUnit);
   const status = event.status === "OK" ? null : statusStyles[event.status];
 
   return (

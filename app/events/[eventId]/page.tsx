@@ -109,11 +109,16 @@ async function EventContent({ params }: PageParams) {
             eventStatus={event.status}
             initialTiers={tiers}
             isAuthenticated={authenticated}
+            priceUnit={event.priceUnit}
           />
         </div>
       </div>
 
-      <MobileTicketBar eventStatus={event.status} tiers={tiers} />
+      <MobileTicketBar
+        eventStatus={event.status}
+        tiers={tiers}
+        priceUnit={event.priceUnit}
+      />
     </>
   );
 }

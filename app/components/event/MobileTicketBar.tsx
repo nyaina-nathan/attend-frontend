@@ -10,9 +10,11 @@ import type { EventStatus, Tier } from "@/app/lib/types";
 export default function MobileTicketBar({
   eventStatus,
   tiers,
+  priceUnit,
 }: {
   eventStatus: EventStatus;
   tiers: Tier[];
+  priceUnit: string;
 }) {
   if (tiers.length === 0) return null;
 
@@ -23,7 +25,7 @@ export default function MobileTicketBar({
   const label = cancelled
     ? "Ticket sales closed"
     : available
-      ? `From ${formatPrice(minPrice)}`
+      ? `From ${formatPrice(minPrice, priceUnit)}`
       : "Sold out";
 
   const actionLabel = cancelled ? "Closed" : available ? "Get tickets" : "Sold out";

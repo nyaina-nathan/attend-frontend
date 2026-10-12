@@ -9,12 +9,14 @@ import type { Tier } from "@/app/lib/types";
  */
 export default function TierCard({
   tier,
+  priceUnit,
   disabled,
   loading,
   disabledReason,
   onGet,
 }: {
   tier: Tier;
+  priceUnit: string;
   disabled: boolean;
   loading: boolean;
   disabledReason?: string;
@@ -48,7 +50,7 @@ export default function TierCard({
 
       <div className="flex shrink-0 flex-col items-end gap-2">
         <span className="font-display text-lg font-bold">
-          {formatPrice(tier.price)}
+          {formatPrice(tier.price, priceUnit)}
         </span>
         <button
           type="button"
