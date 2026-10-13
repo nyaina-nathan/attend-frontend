@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import Footer from "@/app/components/site/Footer";
 import Navbar from "@/app/components/site/Navbar";
 import AccessState from "@/app/components/event/AccessState";
+import EventEndedNotice from "@/app/components/event/EventEndedNotice";
 import EventHeader from "@/app/components/event/EventHeader";
 import EventInfo from "@/app/components/event/EventInfo";
 import EventSkeleton from "@/app/components/event/EventSkeleton";
@@ -12,6 +13,7 @@ import OrganizerBar from "@/app/components/event/OrganizerBar";
 import StatusBanner from "@/app/components/event/StatusBanner";
 import TicketPanel from "@/app/components/event/TicketPanel";
 import { getEventMetadata, getEventResult, isAuthenticated } from "@/app/lib/event";
+import { hasEventEnded } from "@/app/lib/event-time";
 
 interface PageParams {
   params: Promise<{ eventId: string }>;
@@ -82,6 +84,10 @@ async function EventContent({ params }: PageParams) {
   const tiers = event.tiers ?? [];
   const authenticated = await isAuthenticated();
 
+  // Sales close once the event's end time has passed (server clock, matching
+  // the API's own gate). An unparseable end time falls back to showing tickets.
+  const ended = hasEventEnded(event.endTime);
+
   return (
     <>
       <StatusBanner
@@ -104,23 +110,29 @@ async function EventContent({ params }: PageParams) {
         </div>
 
         <div className="lg:col-span-1">
-          <TicketPanel
-            eventId={event.id}
-            eventTitle={event.title}
-            startTime={event.startTime}
-            eventStatus={event.status}
-            initialTiers={tiers}
-            isAuthenticated={authenticated}
-            priceUnit={event.priceUnit}
-          />
+          {ended ? (
+            <EventEndedNotice endTime={event.endTime} />
+          ) : (
+            <TicketPanel
+              eventId={event.id}
+              eventTitle={event.title}
+              startTime={event.startTime}
+              eventStatus={event.status}
+              initialTiers={tiers}
+              isAuthenticated={authenticated}
+              priceUnit={event.priceUnit}
+            />
+          )}
         </div>
       </div>
 
-      <MobileTicketBar
-        eventStatus={event.status}
-        tiers={tiers}
-        priceUnit={event.priceUnit}
-      />
+      {ended ? null : (
+        <MobileTicketBar
+          eventStatus={event.status}
+          tiers={tiers}
+          priceUnit={event.priceUnit}
+        />
+      )}
     </>
   );
 }
