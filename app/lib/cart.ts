@@ -60,6 +60,11 @@ export function removeItem(items: CartItem[], key: string): CartItem[] {
   return items.filter((item) => cartItemKey(item) !== key);
 }
 
+/** Drop every line for one event (used after its order is placed). */
+export function removeCartEvent(items: CartItem[], eventId: string): CartItem[] {
+  return items.filter((item) => item.eventId !== eventId);
+}
+
 /** Set an explicit quantity; anything below 1 removes the line. */
 export function setQuantity(
   items: CartItem[],
@@ -211,6 +216,11 @@ export function addCartItem(
 export function removeCartItem(key: string): void {
   ensureInitialized();
   commit(removeItem(snapshot.items, key));
+}
+
+export function removeEventFromCart(eventId: string): void {
+  ensureInitialized();
+  commit(removeCartEvent(snapshot.items, eventId));
 }
 
 export function updateCartQuantity(key: string, quantity: number): void {

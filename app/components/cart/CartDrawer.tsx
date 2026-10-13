@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { formatEventDate, formatPrice } from "@/app/lib/format";
 import { Cart as CartIcon, X } from "../ui/icons";
@@ -120,17 +121,27 @@ export default function CartDrawer({
         </div>
 
         <footer className="border-t-2 border-ink px-5 py-4">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="w-full cursor-not-allowed rounded-full border-2 border-ink bg-accent px-6 py-3 text-sm font-semibold text-paper shadow-brutal opacity-60"
-          >
-            Checkout
-          </button>
+          {groups.length > 0 ? (
+            <Link
+              href="/checkout"
+              onClick={onClose}
+              className="flex w-full items-center justify-center rounded-full border-2 border-ink bg-accent px-6 py-3 text-sm font-semibold text-paper shadow-brutal transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            >
+              Checkout
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="w-full cursor-not-allowed rounded-full border-2 border-ink bg-accent px-6 py-3 text-sm font-semibold text-paper shadow-brutal opacity-60"
+            >
+              Checkout
+            </button>
+          )}
           <div className="mt-2 flex items-center justify-between gap-3">
             <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
-              Checkout coming soon
+              {count} ticket{count === 1 ? "" : "s"}
             </span>
             {groups.length > 0 ? (
               <button

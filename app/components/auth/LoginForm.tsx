@@ -18,10 +18,10 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 /**
  * Login form. Posts to the API with cookies included; on success it navigates
- * to the dashboard. Errors appear in red at the top of the form and clear
- * themselves after ten seconds.
+ * to `next` (when provided, e.g. returning to `/checkout`) or the dashboard.
+ * Errors appear in red at the top of the form and clear after ten seconds.
  */
-export default function LoginForm() {
+export default function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
   const { error, showError, clearError } = useAuthError();
   const [email, setEmail] = useState("");
@@ -45,7 +45,7 @@ export default function LoginForm() {
       });
 
       if (res.ok) {
-        router.push("/dashboard");
+        router.push(next ?? "/dashboard");
         router.refresh();
         return;
       }

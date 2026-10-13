@@ -191,6 +191,59 @@ export interface PaymentMethodUpdateInput {
   isActive?: boolean;
 }
 
+/* --------------------------------------------------------------------- orders */
+
+/** Lifecycle of a buyer-submitted order, from `Order.orderStatus`. */
+export type OrderStatus = "PENDING" | "APPROVED" | "REFUSED" | "CANCELLED";
+
+/** One line of an order. */
+export interface OrderItem {
+  id: string;
+  tierId: string;
+  tierName: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+/** Ticket issued against an order (populated once approved). */
+export interface OrderTicketRef {
+  id: string;
+  ticketStatus: TicketStatus;
+}
+
+/** A ticket order from `POST /events/{eventId}/orders` / `GET /orders/{orderId}`. */
+export interface Order {
+  id: string;
+  eventId: string;
+  owner: UserRef;
+  paymentMethodId: string;
+  transactionReference: string | null;
+  priceUnit: string;
+  orderStatus: OrderStatus;
+  refusalReason: string | null;
+  reviewedBy: UserRef | null;
+  reviewedAt: string | null;
+  items: OrderItem[];
+  total: number;
+  tickets: OrderTicketRef[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** One requested line for `OrderCreateInput`. */
+export interface OrderItemCreateInput {
+  tierId: string;
+  quantity: number;
+}
+
+/** Request body for `POST /events/{eventId}/orders`. */
+export interface OrderCreateInput {
+  paymentMethodId: string;
+  transactionReference?: string;
+  items: OrderItemCreateInput[];
+}
+
 /** Request body for `POST /events/{eventId}/tiers`. */
 export interface TierCreateInput {
   tierName: string;

@@ -18,6 +18,7 @@ import {
   getCartSnapshot,
   groupByEvent,
   removeCartItem,
+  removeEventFromCart,
   subscribeCart,
   updateCartQuantity,
   type CartGroup,
@@ -32,6 +33,8 @@ interface CartContextValue {
   hydrated: boolean;
   add: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
   remove: (eventId: string, tierId: string) => void;
+  /** Drop every line for one event (after its order is placed). */
+  removeEvent: (eventId: string) => void;
   setQuantity: (eventId: string, tierId: string, quantity: number) => void;
   clear: () => void;
   quantityOf: (eventId: string, tierId: string) => number;
@@ -69,6 +72,11 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const removeEvent = useCallback(
+    (eventId: string) => removeEventFromCart(eventId),
+    [],
+  );
+
   const setQuantity = useCallback(
     (eventId: string, tierId: string, quantity: number) =>
       updateCartQuantity(cartItemKey({ eventId, tierId }), quantity),
@@ -87,6 +95,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       hydrated: snapshot.hydrated,
       add,
       remove,
+      removeEvent,
       setQuantity,
       clear,
       quantityOf: (eventId, tierId) => {
@@ -99,7 +108,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
       open,
       close,
     }),
-    [snapshot, isOpen, add, remove, setQuantity, clear, open, close],
+    [snapshot, isOpen, add, remove, removeEvent, setQuantity, clear, open, close],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
