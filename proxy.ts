@@ -4,15 +4,18 @@ import { NextResponse, type NextRequest } from "next/server";
 /**
  * Proxy (Next.js 16's renamed middleware) around authentication.
  *
- * Public routes (`/`, `/events`, …) are never checked, with one exception:
+ * Public routes (`/`, `/events`, …) are never checked, with two exceptions:
  * `/login` and `/register` are the auth forms, so a visitor who still holds a
- * session is sent straight to `/dashboard` instead of seeing them.
+ * session is sent straight to `/dashboard` instead of seeing them; and any
+ * other public page bootstraps the session (see below) so the navbar can show
+ * a returning visitor as logged in.
  *
- * For `/dashboard/**` the `access_token` JWT is verified locally against the
- * backend's shared secret. When it is missing or expired, the session is
- * rotated through `POST /auth/refresh` with the `refresh_token` cookie: the
- * backend's new `Set-Cookie` headers are forwarded to the browser and to the
- * current render. If rotation fails the caller is sent to `/`.
+ * The `access_token` JWT is verified locally against the backend's shared
+ * secret. When it is missing or expired but a `refresh_token` cookie is held,
+ * the session is rotated through `POST /auth/refresh`: the backend's new
+ * `Set-Cookie` headers are forwarded to the browser and to the current render.
+ * On `/dashboard/**` a failed rotation sends the caller to `/`; on public
+ * pages it just renders them as a guest.
  */
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
@@ -136,6 +139,41 @@ function clearAuthCookies(response: NextResponse): void {
 }
 
 /**
+ * Public pages render the navbar, which reads the session. When the access
+ * cookie is missing or expired but a refresh token is still held, rotate the
+ * session first so the navbar can show the caller as logged in on the current
+ * render. A locally valid access token short-circuits without a network call;
+ * anonymous visitors (no refresh token) and speculative prefetches pass
+ * straight through. Failures fall through as a guest, leaving the cookies
+ * untouched so a transient backend error does not log the caller out.
+ */
+async function handlePublicPage(
+  request: NextRequest,
+): Promise<NextResponse> {
+  if (isPrefetch(request)) {
+    return NextResponse.next();
+  }
+
+  const accessToken = request.cookies.get(ACCESS_COOKIE)?.value;
+  if (await isAccessTokenValid(accessToken)) {
+    return NextResponse.next();
+  }
+
+  if (request.cookies.has(REFRESH_COOKIE)) {
+    const rotation = await rotateSession(request);
+    if (rotation) {
+      const response = NextResponse.next({
+        request: { headers: rotation.requestHeaders },
+      });
+      applySetCookies(response, rotation.setCookies);
+      return response;
+    }
+  }
+
+  return NextResponse.next();
+}
+
+/**
  * A visitor who already holds a session should not see the auth forms: send
  * them to the dashboard. A locally valid access token short-circuits without a
  * network call; otherwise the refresh token is rotated and the fresh cookies
@@ -177,11 +215,12 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   // Public pages: no auth work…
   if (!isProtectedPath(pathname)) {
-    // …except the auth forms, which an authenticated visitor should skip.
-    if (!AUTH_PATHS.has(pathname)) {
-      return NextResponse.next();
+    // …except the auth forms, which an authenticated visitor should skip, and
+    // every other public page, which bootstraps the session for the navbar.
+    if (AUTH_PATHS.has(pathname)) {
+      return handleAuthPage(request);
     }
-    return handleAuthPage(request);
+    return handlePublicPage(request);
   }
 
   const accessToken = request.cookies.get(ACCESS_COOKIE)?.value;
