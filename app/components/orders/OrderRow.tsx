@@ -42,8 +42,8 @@ export default function OrderRow({
     .join(" · ");
 
   return (
-    <li>
-      <div className="flex flex-col gap-4 rounded-2xl border-2 border-ink bg-paper p-4 shadow-brutal-sm sm:flex-row sm:items-center sm:gap-5 sm:p-5">
+    <li className="rounded-2xl border-2 border-ink bg-paper p-4 shadow-brutal-sm sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
         <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-5">
           <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border-2 border-ink bg-brand sm:h-16 sm:w-16">
             <span className="font-display text-xl font-bold leading-none">
@@ -108,6 +108,15 @@ export default function OrderRow({
           ) : null}
         </div>
       </div>
+
+      {order.orderStatus === "REFUSED" && order.refusalReason ? (
+        <p className="mt-4 rounded-xl border-2 border-ink/20 bg-surface px-3 py-2 text-sm">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
+            Reason
+          </span>{" "}
+          <span className="text-ink">{order.refusalReason}</span>
+        </p>
+      ) : null}
     </li>
   );
 }

@@ -244,6 +244,11 @@ export interface OrderCreateInput {
   items: OrderItemCreateInput[];
 }
 
+/** Request body for `POST /orders/{orderId}/refuse`. */
+export interface OrderRefuseInput {
+  reason: string;
+}
+
 /** Request body for `POST /events/{eventId}/tiers`. */
 export interface TierCreateInput {
   tierName: string;

@@ -3,7 +3,8 @@ import type { EventDetail } from "@/app/lib/types";
 import LocalDateTime from "../../event/LocalDateTime";
 import LocationViewer from "../../event/LocationViewer";
 import ScanButton from "../../scanner/ScanButton";
-import { ArrowRight, Calendar, Globe, Lock, MapPin } from "../../ui/icons";
+import Button from "../../ui/Button";
+import { ArrowRight, Calendar, Globe, Lock, MapPin, Receipt } from "../../ui/icons";
 import { RoleBadge, StatusBadge } from "../Badges";
 import DashboardEventTiers from "./DashboardEventTiers";
 import EditEventButton from "./EditEventButton";
@@ -52,6 +53,13 @@ export default function DashboardEventDetail({ event }: { event: EventDetail }) 
             role={event.myRole}
           />
           <ScanButton eventId={event.id} eventTitle={event.title} />
+          <Button
+            href={`/dashboard/events/${event.id}/orders`}
+            variant="outline"
+            icon={<Receipt className="h-4 w-4" />}
+          >
+            Orders
+          </Button>
         </div>
 
         <div className="flex flex-col gap-1.5 text-base text-ink-soft">
