@@ -18,7 +18,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * pages it just renders them as a guest.
  */
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+const API_BASE = (process.env.BACKEND_URL ?? "").replace(/\/$/, "");
 const JWT_SECRET = process.env.JWT_SECRET;
 const encodedSecret = JWT_SECRET ? new TextEncoder().encode(JWT_SECRET) : null;
 
@@ -249,6 +249,6 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)",
+    "/((?!api/|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)",
   ],
 };

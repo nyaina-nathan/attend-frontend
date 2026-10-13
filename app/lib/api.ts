@@ -1,15 +1,31 @@
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+/**
+ * API base URLs.
+ *
+ * On the server, calls go straight to the backend (`BACKEND_URL`, server-only).
+ * In the browser, calls go to a same-origin `/api/*` path that `next.config.ts`
+ * rewrites to the backend, so auth cookies are first-party on our own domain.
+ */
+const SERVER_API_BASE = (process.env.BACKEND_URL ?? "").replace(/\/$/, "");
+const CLIENT_API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(
+  /\/$/,
+  "",
+);
+
+function apiBase(): string {
+  return typeof window === "undefined" ? SERVER_API_BASE : CLIENT_API_BASE;
+}
 
 /**
  * Thin JSON fetch wrapper around the Attend API.
  * Throws on a non-2xx response so callers can decide how to degrade.
  */
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!API_BASE) {
-    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+  const base = apiBase();
+  if (!base) {
+    throw new Error("API base URL is not configured");
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${base}${path}`, {
     ...init,
     headers: { Accept: "application/json", ...init?.headers },
   });
@@ -41,11 +57,12 @@ export async function apiRequest<T>(
   path: string,
   init?: RequestInit,
 ): Promise<ApiResult<T>> {
-  if (!API_BASE) {
-    throw new Error("NEXT_PUBLIC_API_URL is not configured");
+  const base = apiBase();
+  if (!base) {
+    throw new Error("API base URL is not configured");
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${base}${path}`, {
     ...init,
     headers: { Accept: "application/json", ...init?.headers },
   });
