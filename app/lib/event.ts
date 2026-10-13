@@ -1,7 +1,7 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { apiFetch, apiRequest } from "./api";
 import { getAuthCookieHeader } from "./auth";
-import type { EventDetail } from "./types";
+import type { EventDetail, PaymentMethod } from "./types";
 
 /**
  * Result of resolving one event for the current request. `401`/`403`/`404` are
@@ -45,6 +45,43 @@ export async function getEventMetadata(eventId: string): Promise<EventDetail | n
     return await apiFetch<EventDetail>(`/events/${eventId}`);
   } catch {
     return null;
+  }
+}
+
+/**
+ * Result of loading an event's payment methods. `401`/`403`/`404` are expected
+ * outcomes (session gone / not an organizer / unknown id) and must not throw,
+ * so the section can render the matching state instead of the error boundary.
+ */
+export type PaymentMethodsResult =
+  | { ok: true; status: 200; data: PaymentMethod[] }
+  | { ok: false; status: number };
+
+/**
+ * Payment methods of an event (`GET /events/{eventId}/payment-methods`).
+ * Organizers only; the creator also sees inactive methods. Never cached: the
+ * payload is per-event and permission-scoped. Forwards the caller's cookies so
+ * the API can authorize the request.
+ */
+export async function getEventPaymentMethods(
+  eventId: string,
+): Promise<PaymentMethodsResult> {
+  const cookie = await getAuthCookieHeader();
+
+  try {
+    const res = await apiRequest<PaymentMethod[]>(
+      `/events/${eventId}/payment-methods`,
+      {
+        cache: "no-store",
+        headers: cookie ? { cookie } : undefined,
+      },
+    );
+
+    if (res.ok && res.data) return { ok: true, status: 200, data: res.data };
+    return { ok: false, status: res.status };
+  } catch {
+    // Network/parse failure: surface as a generic error state (status 0).
+    return { ok: false, status: 0 };
   }
 }
 

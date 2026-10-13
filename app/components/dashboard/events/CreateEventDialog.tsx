@@ -13,16 +13,23 @@ import {
   type TierDraft,
 } from "@/app/lib/create-event";
 import { localDateTimeInputToISO } from "@/app/lib/events-query";
+import {
+  emptyPaymentMethodDraft,
+  validatePaymentMethodDrafts,
+  type PaymentMethodDraft,
+} from "@/app/lib/payment-methods";
 import type {
   EventCreateInput,
   EventDetail,
+  PaymentMethod,
   Tier,
 } from "@/app/lib/types";
-import { ArrowRight, X } from "../../ui/icons";
+import { ArrowRight, Plus, X } from "../../ui/icons";
 import EventFields from "./EventFields";
+import PaymentMethodFields from "./PaymentMethodFields";
 import TierFields from "./TierFields";
 
-type Step = 1 | 2;
+type Step = 1 | 2 | 3;
 
 function messageFor(errorCode: string | undefined, status: number): string {
   if (status === 401) return "Your session expired. Please log in again.";
@@ -33,11 +40,20 @@ function messageFor(errorCode: string | undefined, status: number): string {
   return "We couldn’t create your event. Please try again.";
 }
 
+function paymentMessageFor(errorCode: string | undefined, status: number): string {
+  if (errorCode === "VALIDATION_ERROR") {
+    return "Please check the payment details and try again.";
+  }
+  if (status === 409) return "That payment method is already used for this event.";
+  return "We couldn’t add your payment methods. Please try again.";
+}
+
 /**
  * Create-event wizard, opened by the `?create=1` URL param so every CTA can be a
- * plain link. Two steps — event then tiers (0..N) — with next/previous
- * navigation. On submit it creates the event, then each tier; if a tier fails,
- * the freshly created event is deleted so nothing partial is left behind.
+ * plain link. Three steps — event, tiers (0..N) then payment methods (0..N) —
+ * with next/previous navigation. On submit it creates the event, then each tier
+ * and each payment method; if a follow-up write fails, the freshly created event
+ * is deleted so nothing partial is left behind.
  *
  * Creation only ever happens here, inside the authenticated dashboard.
  */
@@ -51,8 +67,12 @@ export default function CreateEventDialog() {
   const [step, setStep] = useState<Step>(1);
   const [draft, setDraft] = useState<EventDraft>(emptyEventDraft);
   const [tiers, setTiers] = useState<TierDraft[]>([emptyTierDraft()]);
+  const [payments, setPayments] = useState<PaymentMethodDraft[]>([
+    emptyPaymentMethodDraft(),
+  ]);
   const [errors, setErrors] = useState<EventErrors>({});
   const [tierErrors, setTierErrors] = useState<Record<number, string>>({});
+  const [paymentErrors, setPaymentErrors] = useState<Record<number, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,8 +80,10 @@ export default function CreateEventDialog() {
     setStep(1);
     setDraft(emptyEventDraft());
     setTiers([emptyTierDraft()]);
+    setPayments([emptyPaymentMethodDraft()]);
     setErrors({});
     setTierErrors({});
+    setPaymentErrors({});
     setSubmitError(null);
     setSubmitting(false);
   }, []);
@@ -105,10 +127,32 @@ export default function CreateEventDialog() {
     setTierErrors({});
   };
 
+  const updatePayment = (index: number, patch: Partial<PaymentMethodDraft>) =>
+    setPayments((current) =>
+      current.map((payment, i) =>
+        i === index ? { ...payment, ...patch } : payment,
+      ),
+    );
+
+  const addPayment = () =>
+    setPayments((current) => [...current, emptyPaymentMethodDraft()]);
+
+  const removePayment = (index: number) => {
+    setPayments((current) => current.filter((_, i) => i !== index));
+    setPaymentErrors({});
+  };
+
   function goNext() {
-    const nextErrors = validateEventDraft(draft);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) setStep(2);
+    if (step === 1) {
+      const nextErrors = validateEventDraft(draft);
+      setErrors(nextErrors);
+      if (Object.keys(nextErrors).length === 0) setStep(2);
+      return;
+    }
+
+    const { errors: nextTierErrors } = validateTierDrafts(tiers);
+    setTierErrors(nextTierErrors);
+    if (Object.keys(nextTierErrors).length === 0) setStep(3);
   }
 
   async function submit() {
@@ -125,11 +169,21 @@ export default function CreateEventDialog() {
       validateTierDrafts(tiers);
     if (Object.keys(nextTierErrors).length > 0) {
       setTierErrors(nextTierErrors);
+      setStep(2);
+      return;
+    }
+
+    const { errors: nextPaymentErrors, payload: paymentPayload } =
+      validatePaymentMethodDrafts(payments);
+    if (Object.keys(nextPaymentErrors).length > 0) {
+      setPaymentErrors(nextPaymentErrors);
+      setStep(3);
       return;
     }
 
     setErrors({});
     setTierErrors({});
+    setPaymentErrors({});
     setSubmitError(null);
     setSubmitting(true);
 
@@ -190,6 +244,31 @@ export default function CreateEventDialog() {
         }
       }
 
+      for (const payment of paymentPayload) {
+        const paymentRes = await apiRequest<PaymentMethod>(
+          `/events/${eventId}/payment-methods`,
+          {
+            method: "POST",
+            credentials: "include",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payment),
+          },
+        );
+
+        if (!paymentRes.ok) {
+          await apiRequest(`/events/${eventId}`, {
+            method: "DELETE",
+            credentials: "include",
+            cache: "no-store",
+          });
+          setSubmitError(
+            paymentMessageFor(paymentRes.errorCode, paymentRes.status),
+          );
+          return;
+        }
+      }
+
       close();
       router.refresh();
     } catch {
@@ -226,13 +305,17 @@ export default function CreateEventDialog() {
         <header className="flex items-start justify-between gap-4">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">
-              Step {step} of 2
+              Step {step} of 3
             </p>
             <h2
               id="create-event-title"
               className="mt-1 font-display text-2xl font-bold"
             >
-              {step === 1 ? "Event details" : "Ticket tiers"}
+              {step === 1
+                ? "Event details"
+                : step === 2
+                  ? "Ticket tiers"
+                  : "Payment methods"}
             </h2>
           </div>
           <button
@@ -258,7 +341,7 @@ export default function CreateEventDialog() {
 
         {step === 1 ? (
           <EventFields draft={draft} errors={errors} onChange={updateDraft} />
-        ) : (
+        ) : step === 2 ? (
           <TierFields
             tiers={tiers}
             errors={tierErrors}
@@ -266,13 +349,62 @@ export default function CreateEventDialog() {
             onAdd={addTier}
             onRemove={removeTier}
           />
+        ) : (
+          <div className="mt-5 flex flex-col gap-4">
+            <p className="rounded-2xl border-2 border-ink/15 bg-surface px-4 py-3 text-xs font-semibold text-ink-soft">
+              Optional. Add how buyers can pay you — you can also do this later.
+            </p>
+
+            {payments.length === 0 ? (
+              <p className="rounded-2xl border-2 border-dashed border-ink/30 px-4 py-8 text-center text-sm text-ink-soft">
+                No payment methods yet. Add one so buyers know how to pay.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {payments.map((payment, index) => (
+                  <li
+                    key={index}
+                    className="rounded-2xl border-2 border-ink bg-paper p-3 shadow-brutal-sm"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
+                        Method {index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removePayment(index)}
+                        aria-label={`Remove payment method ${index + 1}`}
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border-2 border-ink bg-paper shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                      >
+                        <X className="h-4 w-4 text-danger" />
+                      </button>
+                    </div>
+                    <PaymentMethodFields
+                      draft={payment}
+                      error={paymentErrors[index]}
+                      onChange={(patch) => updatePayment(index, patch)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <button
+              type="button"
+              onClick={addPayment}
+              className="inline-flex items-center justify-center gap-2 self-start rounded-full border-2 border-ink bg-paper px-4 py-2.5 text-sm font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            >
+              <Plus className="h-4 w-4" />
+              Add payment method
+            </button>
+          </div>
         )}
 
         <footer className="mt-6 flex items-center justify-between gap-3">
-          {step === 2 ? (
+          {step > 1 ? (
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => setStep((current) => (current - 1) as Step)}
               disabled={submitting}
               className="rounded-full border-2 border-ink bg-paper px-5 py-2.5 text-sm font-semibold shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:opacity-60"
             >
@@ -282,7 +414,7 @@ export default function CreateEventDialog() {
             <span />
           )}
 
-          {step === 1 ? (
+          {step < 3 ? (
             <button
               type="button"
               onClick={goNext}

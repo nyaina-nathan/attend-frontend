@@ -13,7 +13,7 @@ import {
   buildEventUpdateInput,
   eventDraftFromDetail,
 } from "@/app/lib/edit-event";
-import type { EventDetail } from "@/app/lib/types";
+import type { EventDetail, PaymentMethod } from "@/app/lib/types";
 import LocalDateTime from "../../event/LocalDateTime";
 import Button from "../../ui/Button";
 import { ArrowRight, ArrowUpRight } from "../../ui/icons";
@@ -22,6 +22,7 @@ import { useNow } from "../useNow";
 import ConfirmDialog from "./ConfirmDialog";
 import EventEditSkeleton from "./EventEditSkeleton";
 import EventFields from "./EventFields";
+import PaymentMethodsEditor from "./PaymentMethodsEditor";
 
 function sameDraft(a: EventDraft, b: EventDraft): boolean {
   return (
@@ -66,7 +67,13 @@ const secondaryAction =
  * timezone (server and client can otherwise disagree, breaking hydration).
  * Events lock automatically once their start time has passed.
  */
-export default function EventEditForm({ event }: { event: EventDetail }) {
+export default function EventEditForm({
+  event,
+  paymentMethods,
+}: {
+  event: EventDetail;
+  paymentMethods: PaymentMethod[];
+}) {
   const router = useRouter();
   const mounted = useMounted();
   const now = useNow();
@@ -257,6 +264,13 @@ export default function EventEditForm({ event }: { event: EventDetail }) {
         className="rounded-3xl border-2 border-ink bg-paper p-5 shadow-brutal-sm sm:p-6"
       >
         <EventFields draft={draft} errors={errors} onChange={updateDraft} />
+      </section>
+
+      <section
+        aria-label="Payment methods"
+        className="rounded-3xl border-2 border-ink bg-paper p-5 shadow-brutal-sm sm:p-6"
+      >
+        <PaymentMethodsEditor eventId={event.id} methods={paymentMethods} />
       </section>
 
       <div className="flex flex-col gap-4 border-t-2 border-ink/10 pt-6 sm:flex-row sm:items-center sm:justify-between">

@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import EventEditForm from "@/app/components/dashboard/events/EventEditForm";
 import EventEditSkeleton from "@/app/components/dashboard/events/EventEditSkeleton";
-import { getEventResult } from "@/app/lib/event";
+import { getEventPaymentMethods, getEventResult } from "@/app/lib/event";
 
 export const metadata: Metadata = {
   title: "Edit event",
@@ -48,5 +48,12 @@ async function EditContent({ params }: PageParams) {
   }
   if (result.data.myRole === null) notFound();
 
-  return <EventEditForm event={result.data} />;
+  const paymentMethods = await getEventPaymentMethods(eventId);
+
+  return (
+    <EventEditForm
+      event={result.data}
+      paymentMethods={paymentMethods.ok ? paymentMethods.data : []}
+    />
+  );
 }

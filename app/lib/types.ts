@@ -143,6 +143,54 @@ export interface EventUpdateInput {
   priceUnit?: string;
 }
 
+/* ------------------------------------------------------------ payment methods */
+
+/** How an event accepts money, from `PaymentMethod.paymentType`. */
+export type PaymentType =
+  | "BANK_TRANSFER"
+  | "MOBILE_MONEY"
+  | "CARD"
+  | "CRYPTO"
+  | "CASH"
+  | "OTHER";
+
+/** A per-event payment method from `GET /events/{eventId}/payment-methods`. */
+export interface PaymentMethod {
+  id: string;
+  eventId: string;
+  paymentType: PaymentType;
+  providerName: string;
+  accountName: string;
+  accountIdentifier: string;
+  routingDetails: string | null;
+  instructions: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Request body for `POST /events/{eventId}/payment-methods`. */
+export interface PaymentMethodCreateInput {
+  paymentType: PaymentType;
+  providerName: string;
+  accountName: string;
+  accountIdentifier: string;
+  routingDetails?: string;
+  instructions?: string;
+  isActive?: boolean;
+}
+
+/** Request body for `PATCH /payment-methods/{paymentMethodId}`. Only changed fields are sent. */
+export interface PaymentMethodUpdateInput {
+  paymentType?: PaymentType;
+  providerName?: string;
+  accountName?: string;
+  accountIdentifier?: string;
+  routingDetails?: string;
+  instructions?: string;
+  isActive?: boolean;
+}
+
 /** Request body for `POST /events/{eventId}/tiers`. */
 export interface TierCreateInput {
   tierName: string;
