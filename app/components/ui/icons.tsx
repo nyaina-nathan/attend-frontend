@@ -236,6 +236,15 @@ export function Document(props: IconProps) {
   );
 }
 
+export function Receipt(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M5 3h14v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21Z" />
+      <path d="M9 8h6M9 12h6M9 16h3" />
+    </Base>
+  );
+}
+
 export function Mail(props: IconProps) {
   return (
     <Base {...props}>

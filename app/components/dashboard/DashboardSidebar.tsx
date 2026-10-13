@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Logo from "../ui/Logo";
-import { Calendar, Chart, Mail, Menu, Ticket, X } from "../ui/icons";
+import { Calendar, Chart, Mail, Menu, Receipt, Ticket, X } from "../ui/icons";
 
 const links = [
   { href: "/dashboard", label: "Overview", Icon: Chart },
   { href: "/dashboard/events", label: "My events", Icon: Calendar },
   { href: "/dashboard/tickets", label: "My tickets", Icon: Ticket },
+  { href: "/dashboard/orders", label: "Orders", Icon: Receipt },
   { href: "/dashboard/invitations", label: "Invitations", Icon: Mail },
 ];
 

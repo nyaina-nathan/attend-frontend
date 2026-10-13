@@ -301,6 +301,16 @@ export interface TicketsQuery {
   size: number;
 }
 
+/**
+ * Normalized `GET /orders/me` query, mirrored by the URL. `status` is optional
+ * so the default view spans every order status.
+ */
+export interface OrdersQuery {
+  status?: OrderStatus;
+  page: number;
+  size: number;
+}
+
 /* ------------------------------------------------------------------ dashboard */
 
 /** Rule that produced an attention item. Ignore unknown values for forward-compat. */
