@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import CartButton from "../cart/CartButton";
 import Logo from "../ui/Logo";
 import MobileMenu from "./MobileMenu";
 import NavbarAuth, { NavbarAuthSkeleton } from "./NavbarAuth";
@@ -28,18 +29,22 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <CartButton />
           <Suspense fallback={<NavbarAuthSkeleton />}>
             <NavbarAuth />
           </Suspense>
         </div>
 
-        <MobileMenu
-          account={
-            <Suspense fallback={<NavbarAuthSkeleton variant="mobile" />}>
-              <NavbarAuth variant="mobile" />
-            </Suspense>
-          }
-        />
+        <div className="flex items-center gap-2 md:hidden">
+          <CartButton variant="mobile" />
+          <MobileMenu
+            account={
+              <Suspense fallback={<NavbarAuthSkeleton variant="mobile" />}>
+                <NavbarAuth variant="mobile" />
+              </Suspense>
+            }
+          />
+        </div>
       </nav>
     </header>
   );

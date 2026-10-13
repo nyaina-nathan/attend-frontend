@@ -106,6 +106,8 @@ async function EventContent({ params }: PageParams) {
         <div className="lg:col-span-1">
           <TicketPanel
             eventId={event.id}
+            eventTitle={event.title}
+            startTime={event.startTime}
             eventStatus={event.status}
             initialTiers={tiers}
             isAuthenticated={authenticated}

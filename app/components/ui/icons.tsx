@@ -192,6 +192,24 @@ export function Plus(props: IconProps) {
   );
 }
 
+export function Cart(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M4 5h2l2.4 10.2a1.5 1.5 0 0 0 1.5 1.2h7.7a1.5 1.5 0 0 0 1.5-1.2L21 8H7" />
+      <circle cx="10" cy="20" r="1.4" />
+      <circle cx="18" cy="20" r="1.4" />
+    </Base>
+  );
+}
+
+export function Minus(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M5 12h14" />
+    </Base>
+  );
+}
+
 export function Pencil(props: IconProps) {
   return (
     <Base {...props}>

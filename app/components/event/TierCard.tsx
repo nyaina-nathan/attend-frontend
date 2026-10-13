@@ -4,23 +4,24 @@ import { formatPrice } from "@/app/lib/format";
 import type { Tier } from "@/app/lib/types";
 
 /**
- * One purchasable tier with price, availability and a Get-ticket button.
+ * One purchasable tier with price, availability and an Add-to-cart button.
  * `disabledReason` is surfaced as text so the disabled state isn't the only cue.
  */
 export default function TierCard({
   tier,
   priceUnit,
   disabled,
-  loading,
   disabledReason,
-  onGet,
+  inCart = 0,
+  onAdd,
 }: {
   tier: Tier;
   priceUnit: string;
   disabled: boolean;
-  loading: boolean;
   disabledReason?: string;
-  onGet: (tier: Tier) => void;
+  /** Quantity of this tier already in the cart. */
+  inCart?: number;
+  onAdd: (tier: Tier) => void;
 }) {
   const soldOut = tier.remaining === 0;
   const urgency = !soldOut && tier.remaining <= 10;
@@ -31,7 +32,7 @@ export default function TierCard({
       ? `Only ${tier.remaining} left`
       : `${tier.remaining} left`;
 
-  const buttonDisabled = disabled || soldOut || loading;
+  const buttonDisabled = disabled || soldOut;
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-ink bg-paper p-4 shadow-brutal-sm">
@@ -46,6 +47,11 @@ export default function TierCard({
         >
           {availability}
         </p>
+        {inCart > 0 ? (
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-accent">
+            {inCart} in cart
+          </p>
+        ) : null}
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-2">
@@ -54,12 +60,12 @@ export default function TierCard({
         </span>
         <button
           type="button"
-          onClick={() => onGet(tier)}
+          onClick={() => onAdd(tier)}
           disabled={buttonDisabled}
           aria-disabled={buttonDisabled}
           className="rounded-full border-2 border-ink bg-accent px-4 py-2 text-xs font-semibold text-paper shadow-brutal-sm transition-all duration-500 ease-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-brutal-sm"
         >
-          {loading ? "Getting…" : soldOut ? "Sold out" : "Get ticket"}
+          {soldOut ? "Sold out" : "Add to cart"}
         </button>
         {disabledReason ? (
           <span className="text-right text-[10px] text-ink-soft">

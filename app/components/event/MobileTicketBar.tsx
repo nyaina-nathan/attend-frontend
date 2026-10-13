@@ -28,7 +28,11 @@ export default function MobileTicketBar({
       ? `From ${formatPrice(minPrice, priceUnit)}`
       : "Sold out";
 
-  const actionLabel = cancelled ? "Closed" : available ? "Get tickets" : "Sold out";
+  const actionLabel = cancelled
+    ? "Closed"
+    : available
+      ? "Choose tickets"
+      : "Sold out";
   const disabled = cancelled || !available;
 
   function scrollToTickets() {

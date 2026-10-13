@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import CartDrawerHost from "./components/cart/CartDrawerHost";
+import CartProvider from "./components/cart/CartProvider";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -32,7 +34,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`h-full antialiased ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-full flex flex-col bg-surface text-ink">
-        {children}
+        <CartProvider>
+          {children}
+          <CartDrawerHost />
+        </CartProvider>
       </body>
     </html>
   );
