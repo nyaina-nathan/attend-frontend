@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { formatRelativeToNow } from "@/app/lib/format";
 import type { AttentionItem } from "@/app/lib/types";
-import { ArrowRight, Check, Layers, Ticket, Users } from "../ui/icons";
+import { ArrowRight, Check, Layers, Receipt, Ticket, Users } from "../ui/icons";
 import { useNow } from "./useNow";
 
 interface Resolved {
@@ -41,6 +41,17 @@ function resolve(item: AttentionItem, now: number | null): Resolved | null {
         icon: <Users className="h-4 w-4" />,
         tone: "danger",
       };
+    case "PENDING_ORDERS": {
+      const count = item.pendingOrders ?? 0;
+      return {
+        message: `${count} order${
+          count === 1 ? "" : "s"
+        } awaiting review on ${item.eventTitle}`,
+        href: `/dashboard/events/${item.eventId}/orders`,
+        icon: <Receipt className="h-4 w-4" />,
+        tone: "warning",
+      };
+    }
     default:
       // Unknown rule: ignore so new backend rules can ship independently.
       return null;

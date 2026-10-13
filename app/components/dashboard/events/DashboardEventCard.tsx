@@ -2,6 +2,7 @@ import Link from "next/link";
 import { formatEventDate, formatEventDay, formatPrice } from "@/app/lib/format";
 import type { EventSummary } from "@/app/lib/types";
 import { MapPin } from "../../ui/icons";
+import PendingOrdersDot from "../../ui/PendingOrdersDot";
 import { StatusBadge } from "../Badges";
 
 /**
@@ -18,8 +19,9 @@ export default function DashboardEventCard({ event }: { event: EventSummary }) {
   return (
     <Link
       href={`/dashboard/events/${event.id}`}
-      className="group flex h-full flex-col rounded-2xl border-2 border-ink bg-paper shadow-brutal transition-all duration-500 ease-brutal hover:-translate-y-1.5 hover:shadow-brutal-lg"
+      className="group relative flex h-full flex-col rounded-2xl border-2 border-ink bg-paper shadow-brutal transition-all duration-500 ease-brutal hover:-translate-y-1.5 hover:shadow-brutal-lg"
     >
+      <PendingOrdersDot pending={event.isOrderPending} />
       <div className="flex items-start gap-3 p-4 sm:gap-4 sm:p-5">
         <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border-2 border-ink bg-brand sm:h-16 sm:w-16">
           <span className="font-display text-xl font-bold leading-none">

@@ -93,6 +93,12 @@ export interface EventSummary {
   minPrice: number | null;
   /** Currency/unit code applying to `minPrice`. */
   priceUnit: string;
+  /**
+   * `true`/`false` when the caller organizes this event (whether it still has a
+   * `PENDING` order to review), or `null` for anonymous callers and
+   * non-organizers.
+   */
+  isOrderPending: boolean | null;
 }
 
 /**
@@ -319,11 +325,16 @@ export interface OrdersQuery {
 /* ------------------------------------------------------------------ dashboard */
 
 /** Rule that produced an attention item. Ignore unknown values for forward-compat. */
-export type AttentionType = "NO_TIERS" | "LOW_STOCK" | "POSTPONED";
+export type AttentionType =
+  | "NO_TIERS"
+  | "LOW_STOCK"
+  | "POSTPONED"
+  | "PENDING_ORDERS";
 
 /**
  * One entry of `organizing.attention`. `tierId`/`tierName`/`remaining` are only
- * present for `LOW_STOCK`; `ticketsIssued` only for `POSTPONED`.
+ * present for `LOW_STOCK`; `ticketsIssued` only for `POSTPONED`; `pendingOrders`
+ * only for `PENDING_ORDERS`.
  */
 export interface AttentionItem {
   type: AttentionType;
@@ -334,6 +345,8 @@ export interface AttentionItem {
   tierName?: string;
   remaining?: number;
   ticketsIssued?: number;
+  /** Number of `PENDING` orders awaiting review on the event. */
+  pendingOrders?: number;
 }
 
 /** The next event the caller organizes, from `GET /users/me/dashboard`. */
